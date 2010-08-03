@@ -28,8 +28,11 @@ local split_by_char
 
 --------------------------------------------------------------------------------
 
-local function find_all_files(path, regexp, dest)
+local function find_all_files(path, regexp, dest, mode)
   dest = dest or {}
+  mode = mode or false
+
+  assert(mode ~= "directory")
 
   for filename in lfs.dir(path) do
     if filename ~= "." and filename ~= ".." then
@@ -37,9 +40,11 @@ local function find_all_files(path, regexp, dest)
       local attr = lfs.attributes(filepath)
       if attr.mode == "directory" then
         find_all_files(filepath, regexp, dest)
-      elseif filename:find(regexp) then
-        dest[#dest + 1] = filepath
-        -- print("found", filepath)
+      elseif not mode or attr.mode == mode then
+        if filename:find(regexp) then
+          dest[#dest + 1] = filepath
+          -- print("found", filepath)
+        end
       end
     end
   end
