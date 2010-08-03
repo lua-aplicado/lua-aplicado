@@ -1,0 +1,27 @@
+#!/bin/bash
+
+if git-rev-parse --verify HEAD 2>/dev/null
+then
+        against=HEAD
+else
+        # Initial commit: diff against an empty tree object
+        against=4b825dc642cb6eb9a060e54bf8d69288fbee4904
+fi
+
+git diff-index --check --cached $against -- || exit 1
+
+# check Lua syntax
+git diff-index --cached HEAD | egrep '\.lua$' | while read -r LINE; do
+  rights=$(echo "${LINE}" | awk '{ print $2; }')
+  hash=$(echo "${LINE}" | awk '{ print $4; }')
+  filename=$(echo "${LINE}" | awk '{ print $6; }')
+
+  # TODO: Hack to exclude symlinks
+  if [ "${rights}" != "120000" ]; then
+    out=$(git show "${hash}" | luac -p - 2>&1)
+    if [ "$?" != "0" ]; then
+      echo "${out//stdin/${filename}}" >&2
+      exit 1
+    fi
+  fi
+done
