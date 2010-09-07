@@ -2,6 +2,11 @@
 -- filesystem.lua: basic code to work with files and directories
 --------------------------------------------------------------------------------
 
+local loadfile = loadfile
+local table_sort = table.sort
+
+--------------------------------------------------------------------------------
+
 -- TODO: Use debug.traceback() in do_atomic_op_with_file()?
 
 local lfs = require 'lfs'
@@ -188,6 +193,36 @@ end
 
 --------------------------------------------------------------------------------
 
+local load_all_files = function(dir_name, pattern)
+  arguments(
+      "string", dir_name,
+      "string", pattern
+    )
+
+  local files = find_all_files(dir_name, pattern)
+  if #files == 0 then
+    return nil, "no files found"
+  end
+
+  table_sort(files) -- Sort filenames for predictable order.
+
+  local chunks = { }
+
+  for i = 1, #files do
+    local chunk, err = loadfile(files[i])
+
+    if not chunk then
+      return nil, err
+    end
+
+    chunks[#chunks + 1] = chunk
+  end
+
+  return chunks
+end
+
+--------------------------------------------------------------------------------
+
 return
 {
   find_all_files = find_all_files;
@@ -196,4 +231,5 @@ return
   update_file = update_file;
   create_path_to_file = create_path_to_file;
   do_atomic_op_with_file = do_atomic_op_with_file;
+  load_all_files = load_all_files;
 }
