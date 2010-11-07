@@ -35,25 +35,13 @@ local shell_exec,
 
 --------------------------------------------------------------------------------
 
--- TODO: UBERHACK! Detect in caller (or some wrapper) instead!!!
-local FORCE_LOCAL_SSH = false
-local LOCALHOST = "localhost"
-
 local shell_exec_remote = function(host, ...)
-  if not FORCE_LOCAL_SSH and host == LOCALHOST then
-    return shell_exec(...)
-  end
-
   return shell_exec_no_subst(
       "ssh", host, shell_format_command(...)
     )
 end
 
 local shell_read_remote = function(host, ...)
-  if not FORCE_LOCAL_SSH and host == LOCALHOST then
-    return shell_read(...)
-  end
-
   return shell_read_no_subst(
       "ssh", host, shell_format_command(...)
     )
