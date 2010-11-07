@@ -98,7 +98,7 @@ local function shell_escape_many(a1, a2, ...)
   return shell_escape(a1), shell_escape_many(a2, ...)
 end
 
-local function shell_escape_no_subst_many(a1, a2, ...)
+local function shell_escape_many_no_subst(a1, a2, ...)
   if a2 == nil then
     return shell_escape_no_subst(a1)
   end
