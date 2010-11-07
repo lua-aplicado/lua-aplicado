@@ -30,6 +30,7 @@ build = {
          ["lua-aplicado.shell.git"] = "lua-aplicado/shell/git.lua";
          ["lua-aplicado.shell.luarocks"] = "lua-aplicado/shell/luarocks.lua";
          ["lua-aplicado.shell.remote"] = "lua-aplicado/shell/remote.lua";
+         ["lua-aplicado.shell.remote_luarocks"] = "lua-aplicado/shell/remote_luarocks.lua";
       }
    }
 }
