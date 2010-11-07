@@ -27,6 +27,7 @@ build = {
          ["lua-aplicado.luajit2"] = "lua-aplicado/luajit2.lua";
          ["lua-aplicado.module"] = "lua-aplicado/module.lua";
          ["lua-aplicado.shell"] = "lua-aplicado/shell.lua";
+         ["lua-aplicado.shell.git"] = "lua-aplicado/shell/git.lua";
       }
    }
 }
