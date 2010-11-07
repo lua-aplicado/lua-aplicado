@@ -26,6 +26,7 @@ build = {
          ["lua-aplicado.lj2_chunk_inspector"] = "lua-aplicado/lj2_chunk_inspector.lua";
          ["lua-aplicado.luajit2"] = "lua-aplicado/luajit2.lua";
          ["lua-aplicado.module"] = "lua-aplicado/module.lua";
+         ["lua-aplicado.shell"] = "lua-aplicado/shell.lua";
       }
    }
 }
