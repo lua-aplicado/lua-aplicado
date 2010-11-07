@@ -58,10 +58,10 @@ end
 
 local function shell_escape_many(a1, a2, ...)
   if a2 == nil then
-    return a1
+    return shell_escape(a1)
   end
 
-  return a1, shell_escape_many(a2, ...)
+  return shell_escape(a1), shell_escape_many(a2, ...)
 end
 
 local shell_format_command = function(...)
