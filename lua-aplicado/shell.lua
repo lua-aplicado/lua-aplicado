@@ -120,8 +120,25 @@ local shell_exec = function(...)
   return assert(os_execute(cmd))
 end
 
+local shell_exec_no_subst = function(...)
+  local cmd = shell_format_command_no_subst(...)
+  print("executing:", cmd)
+  return assert(os_execute(cmd))
+end
+
 local shell_read = function(...)
   local cmd = shell_format_command(...)
+  print("reading:", cmd)
+  local f = assert(io_popen(cmd))
+  local result = f:read("*a")
+  f:close()
+  f = nil
+  print("READ", "`"..result.."'")
+  return result
+end
+
+local shell_read_no_subst = function(...)
+  local cmd = shell_format_command_no_subst(...)
   print("reading:", cmd)
   local f = assert(io_popen(cmd))
   local result = f:read("*a")
@@ -142,5 +159,7 @@ return
   shell_format_command = shell_format_command;
   shell_format_command_no_subst = shell_format_command_no_subst;
   shell_exec = shell_exec;
+  shell_exec_no_subst = shell_exec_no_subst;
   shell_read = shell_read;
+  shell_read_no_subst = shell_read_no_subst;
 }
