@@ -67,7 +67,7 @@ do
   end
 
   -- TODO: Generalize with above
-  shell_escape_no_subst = function()
+  shell_escape_no_subst = function(s)
     if is_number(s) then
       return assert(tostring(s))
     end
