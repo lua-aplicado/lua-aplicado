@@ -2,8 +2,8 @@
 -- shell.lua: dumb ad-hoc code to work with sh-like shell
 --------------------------------------------------------------------------------
 
-local assert, error
-    = assert, error
+local assert, error, tostring
+    = assert, error, tostring
 
 local table_concat = table.concat
 
@@ -23,6 +23,12 @@ local arguments,
         'method_arguments'
       }
 
+local is_number
+      = import 'lua-nucleo/type.lua'
+      {
+        'is_number'
+      }
+
 local tset = import 'lua-nucleo/table-utils.lua' { 'tset' }
 
 --------------------------------------------------------------------------------
@@ -39,6 +45,10 @@ do
   }
 
   shell_escape = function(s)
+    if is_number(s) then
+      return assert(tostring(s))
+    end
+
     if s == "" then
       return "''"
     end
