@@ -33,7 +33,8 @@ local tset = import 'lua-nucleo/table-utils.lua' { 'tset' }
 
 --------------------------------------------------------------------------------
 
-local shell_escape
+local shell_escape -- Allowing shell substitutions to happen
+local shell_escape_no_subst
 do
   local passthrough = tset
   {
@@ -59,13 +60,36 @@ do
 
     s = s:gsub('"', '\\"')
     if s:find('[^A-Za-z0-9_."/%-]') then
-      s = '"' .. s .. '"' -- Allowing shell substitutions to happen
+      s = '"' .. s .. '"'
+    end
+
+    return s
+  end
+
+  -- TODO: Generalize with above
+  shell_escape_no_subst = function()
+    if is_number(s) then
+      return assert(tostring(s))
+    end
+
+    if s == "" then
+      return "''"
+    end
+
+    if passthrough[s] then
+      return s
+    end
+
+    s = s:gsub("'", "\\'")
+    if s:find("[^A-Za-z0-9_.'/%-]") then
+      s = "'" .. s .. "'"
     end
 
     return s
   end
 end
 
+-- Allowing shell substitutions to happen
 local function shell_escape_many(a1, a2, ...)
   if a2 == nil then
     return shell_escape(a1)
@@ -74,8 +98,20 @@ local function shell_escape_many(a1, a2, ...)
   return shell_escape(a1), shell_escape_many(a2, ...)
 end
 
+local function shell_escape_no_subst_many(a1, a2, ...)
+  if a2 == nil then
+    return shell_escape_no_subst(a1)
+  end
+
+  return shell_escape_no_subst(a1), shell_escape_many_no_subst(a2, ...)
+end
+
 local shell_format_command = function(...)
   return table_concat({ shell_escape_many(...) }, " ") -- TODO: Avoid table creation
+end
+
+local shell_format_command_no_subst = function(...)
+  return table_concat({ shell_escape_many_no_subst(...) }, " ") -- TODO: Avoid table creation
 end
 
 local shell_exec = function(...)
@@ -101,7 +137,10 @@ return
 {
   shell_escape = shell_escape;
   shell_escape_many = shell_escape_many;
+  shell_escape_no_subst = shell_escape_no_subst;
+  shell_escape_many_no_subst = shell_escape_many_no_subst;
   shell_format_command = shell_format_command;
+  shell_format_command_no_subst = shell_format_command_no_subst;
   shell_exec = shell_exec;
   shell_read = shell_read;
 }
