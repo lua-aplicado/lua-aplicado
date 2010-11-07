@@ -28,6 +28,7 @@ build = {
          ["lua-aplicado.module"] = "lua-aplicado/module.lua";
          ["lua-aplicado.shell"] = "lua-aplicado/shell.lua";
          ["lua-aplicado.shell.git"] = "lua-aplicado/shell/git.lua";
+         ["lua-aplicado.shell.luarocks"] = "lua-aplicado/shell/luarocks.lua";
          ["lua-aplicado.shell.remote"] = "lua-aplicado/shell/remote.lua";
       }
    }
