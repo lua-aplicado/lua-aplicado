@@ -44,7 +44,6 @@ do
   -- Private function
   local update_info = function(self)
     method_arguments(self)
-
     self.info_ = self.info_ or assert(
         jutil.funcinfo(self.chunk_),
         "not a Lua function"
@@ -53,9 +52,8 @@ do
 
   local get_num_upvalues = function(self)
     method_arguments(self)
-
+    -- do not have recursive search as subfunctions upvalues counted here
     update_info(self)
-
     return self.info_.upvalues
   end
 
@@ -69,39 +67,46 @@ do
       assert(self.sets_ ~= nil)
     else
       assert(self.sets_ == nil)
-
       self.gets_, self.sets_ = { }, { }
+      local handlers_stack = { self.chunk_ }
 
-      update_info(self)
+      while #handlers_stack ~= 0 do
+        local chunk = handlers_stack[#handlers_stack]
+        local info = jutil.funcinfo(chunk)
+        handlers_stack[#handlers_stack] = nil;
+        for i = 1, info.bytecodes do
+          local ins, m = jutil.funcbc(chunk, i)
+          if not ins then
+            break -- TODO: ?!
+          end
 
-      local info = self.info_
-      local chunk = self.chunk_
-
-      for i = 1, info.bytecodes do
-        local ins, m = jutil.funcbc(chunk, i)
-        if not ins then
-          break -- TODO: ?!
-        end
-
-        local oidx = 6 * bit.band(ins, 0xff)
-        local opcode = string_sub(bcnames, oidx + 1, oidx + 6)
-        if opcode == "GGET  " or opcode == "GSET  " then
+          local oidx = 6 * bit.band(ins, 0xff)
+          local opcode = string_sub(bcnames, oidx + 1, oidx + 6)
           local d = bit.rshift(ins, 16)
           local name = jutil.funck(chunk, -d - 1)
 
-          local list = (opcode == "GGET  ") and self.gets_ or self.sets_
-
-          local global = list[name]
-          if not global then
-            global = { }
-            list[name] = global
+          if opcode == "FNEW  " then
+            local d = bit.rshift(ins, 16)
+            local name = jutil.funck(chunk, -d - 1)
+            handlers_stack[ #handlers_stack + 1 ] = name;
           end
 
-          global[#global + 1] =
-          {
-            line = jutil.funcinfo(chunk, i).currentline;
-            source = info.source;
-          }
+          if opcode == "GGET  " or opcode == "GSET  " then
+            local d = bit.rshift(ins, 16)
+            local name = jutil.funck(chunk, -d - 1)
+
+            local list = (opcode == "GGET  ") and self.gets_ or self.sets_
+            local global = list[name]
+            if not global then
+              global = { }
+              list[name] = global
+            end
+            global[#global + 1] =
+            {
+              line = jutil.funcinfo(chunk, i).currentline;
+              source = info.source;
+            }
+          end
         end
       end
     end

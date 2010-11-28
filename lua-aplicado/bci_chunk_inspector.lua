@@ -44,7 +44,7 @@ do
 
   local get_num_upvalues = function(self)
     method_arguments(self)
-
+    -- do not have recursive search as subfunctions upvalues counted here
     update_info(self)
 
     return self.info_.upvalues
@@ -60,31 +60,39 @@ do
       assert(self.sets_ == nil)
 
       self.gets_, self.sets_ = { }, { }
+      local handlers_stack = { self.chunk_ }
 
-      update_info(self)
+      while #handlers_stack ~= 0 do
+        log("stack", handlers_stack, "handler", handlers_stack[#handlers_stack])
+        local chunk = handlers_stack[#handlers_stack]
+        local info = bci.getheader(chunk)
 
-      local info = self.info_
-      local chunk = self.chunk_
+        handlers_stack[#handlers_stack] = nil;
 
-      for i = 1, info.instructions do
-        local line, opcode, a, b, c = bci.getinstruction(chunk, i)
+        for i = 1, info.functions do
+          local name = bci.getfunction(chunk, i)
+          handlers_stack[ #handlers_stack + 1 ] = name;
+        end
 
-        if opcode == "GETGLOBAL" or opcode == "SETGLOBAL" then
-          local name = bci.getconstant(chunk, -b)
+        for i = 1, info.instructions do
+          local line, opcode, a, b, c = bci.getinstruction(chunk, i)
 
-          local list = (opcode == "GETGLOBAL") and self.gets_ or self.sets_
+          if opcode == "GETGLOBAL" or opcode == "SETGLOBAL" then
+            local name = bci.getconstant(chunk, -b)
+            local list = (opcode == "GETGLOBAL") and self.gets_ or self.sets_
 
-          local global = list[name]
-          if not global then
-            global = { }
-            list[name] = global
+            local global = list[name]
+            if not global then
+              global = { }
+              list[name] = global
+            end
+
+            global[#global + 1] =
+            {
+              line = line;
+              source = info.source;
+            }
           end
-
-          global[#global + 1] =
-          {
-            line = line;
-            source = info.source;
-          }
         end
       end
     end
