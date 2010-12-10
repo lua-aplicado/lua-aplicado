@@ -110,6 +110,12 @@ local git_push_all = function(path)
     ) == 0)
 end
 
+local git_is_directory_dirty = function(path, directory)
+  return git_exec(
+      path, "diff-index", "--exit-code", "--quiet", "HEAD", "--", directory
+   ) ~= 0
+end
+
 --------------------------------------------------------------------------------
 
 return
@@ -126,4 +132,5 @@ return
   git_add_directory = git_add_directory;
   git_commit_with_editable_message = git_commit_with_editable_message;
   git_push_all = git_push_all;
+  git_is_directory_dirty = git_is_directory_dirty;
 }
