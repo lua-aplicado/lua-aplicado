@@ -17,6 +17,20 @@ local arguments,
         'method_arguments'
       }
 
+local assert_is_table,
+      assert_is_nil
+      = import 'lua-nucleo/typeassert.lua'
+      {
+        'assert_is_table',
+        'assert_is_nil'
+      }
+
+local split_by_char
+      = import 'lua-nucleo/string.lua'
+      {
+        'split_by_char'
+      }
+
 local shell_exec,
       shell_read
       = import 'lua-aplicado/shell.lua'
@@ -104,6 +118,12 @@ local git_commit_with_editable_message = function(path, message)
     ) == 0)
 end
 
+local git_commit_with_message = function(path, message)
+  assert(git_exec(
+      path, "commit", "-m", message
+    ) == 0)
+end
+
 local git_push_all = function(path)
   assert(git_exec(
       path, "push", "--all"
@@ -114,6 +134,108 @@ local git_is_directory_dirty = function(path, directory)
   return git_exec(
       path, "diff-index", "--exit-code", "--quiet", "HEAD", "--", directory
    ) ~= 0
+end
+
+-- Note that this function intentionally does not try to do any value coersion.
+-- Every leaf value is a string.
+local git_load_config = function(path)
+  local config_str = git_read(path, "config", "--list")
+
+  local result = { }
+
+  for line in config_str:gmatch("(.-)\n") do
+    local name, value = line:match("^(.-)=(.*)$")
+
+    local val = result
+
+    local keys = split_by_char(name, ".")
+    for i = 1, #keys - 1 do
+      local key = keys[i]
+
+      assert_is_table(val)
+      if val[key] == nil then
+        local t = { }
+        val[key] = t
+      end
+      val = val[key]
+    end
+
+    -- Note that the same value can be overridden several times in config
+    -- This seems to be OK
+    val[keys[#keys]] = value
+  end
+
+  return result
+end
+
+-- Returns false if remote not found
+local git_config_get_remote_url = function(git_config, remote_name)
+  arguments(
+      "table", git_config,
+      "string", remote_name
+    )
+
+  local remotes = git_config.remote
+  if not remotes then
+    return false
+  end
+
+  local remote = remotes[remote_name]
+  if not remote then
+    return false
+  end
+
+  return remote.url or false
+end
+
+local git_remote_rm = function(path, remote_name)
+  assert(git_exec(
+      path, "remote", "rm", remote_name
+    ) == 0)
+end
+
+local git_remote_add = function(path, remote_name, url, fetch)
+  if fetch then
+    assert(git_exec(
+        path, "remote", "add", "-f", remote_name, url
+      ) == 0)
+  else
+    assert(git_exec(
+        path, "remote", "add", remote_name, url
+      ) == 0)
+  end
+end
+
+local git_init_subtree = function(
+    path,
+    remote_name,
+    url,
+    branch,
+    relative_path,
+    commit_message,
+    is_interactive
+  )
+  git_remote_add(path, remote_name, url, true) -- with fetch
+
+  assert(git_exec(
+      path, "merge", "-s", "ours", "--no-commit", remote_name .. "/" .. branch
+    ) == 0)
+
+  assert(git_exec(
+      path, "read-tree", "--prefix="..relative_path,   "-u", remote_name .. "/" .. branch
+    ) == 0)
+
+  if is_interactive then
+    git_commit_with_editable_message(path, commit_message)
+  else
+    git_commit_with_message(path, commit_message)
+  end
+end
+
+local git_pull_subtree = function(path, remote_name, branch)
+  assert(git_exec(
+      path, "pull", "-s", "subtree", remote_name, branch
+    ) == 0)
 end
 
 --------------------------------------------------------------------------------
@@ -131,6 +253,13 @@ return
   git_is_file_changed_between_revisions = git_is_file_changed_between_revisions;
   git_add_directory = git_add_directory;
   git_commit_with_editable_message = git_commit_with_editable_message;
+  git_commit_with_message = git_commit_with_message;
   git_push_all = git_push_all;
   git_is_directory_dirty = git_is_directory_dirty;
+  git_load_config = git_load_config;
+  git_config_get_remote_url = git_config_get_remote_url;
+  git_remote_rm = git_remote_rm;
+  git_remote_add = git_remote_add;
+  git_init_subtree = git_init_subtree;
+  git_pull_subtree = git_pull_subtree;
 }
