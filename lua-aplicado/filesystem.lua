@@ -201,7 +201,7 @@ local load_all_files = function(dir_name, pattern)
 
   local files = find_all_files(dir_name, pattern)
   if #files == 0 then
-    return nil, "no files found"
+    return nil, "no files found in " .. dir_name
   end
 
   table_sort(files) -- Sort filenames for predictable order.
