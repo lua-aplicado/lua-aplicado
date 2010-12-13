@@ -2,7 +2,7 @@
 -- filesystem.lua: basic code to work with files and directories
 --------------------------------------------------------------------------------
 
-local loadfile = loadfile
+local loadfile, loadstring = loadfile, loadstring
 local table_sort = table.sort
 
 --------------------------------------------------------------------------------
@@ -25,10 +25,12 @@ local arguments,
         'eat_true'
       }
 
-local split_by_char
+local split_by_char,
+      fill_curly_placeholders
       = import 'lua-nucleo/string.lua'
       {
-        'split_by_char'
+        'split_by_char',
+        'fill_curly_placeholders'
       }
 
 --------------------------------------------------------------------------------
@@ -223,6 +225,49 @@ end
 
 --------------------------------------------------------------------------------
 
+local load_all_files_with_curly_placeholders = function(
+    dir_name,
+    pattern,
+    dictionary
+  )
+  arguments(
+      "string", dir_name,
+      "string", pattern,
+      "table", dictionary
+    )
+
+  local filenames = find_all_files(dir_name, pattern)
+  if #filenames == 0 then
+    return nil, "no files found in " .. dir_name
+  end
+
+  table_sort(filenames) -- Sort filenames for predictable order.
+
+  local chunks = { }
+
+  for i = 1, #filenames do
+    local filename = filenames[i]
+
+    local str, err = read_file(filename)
+    if not str then
+      return nil, err
+    end
+
+    str = fill_curly_placeholders(str, dictionary)
+
+    local chunk, err = loadstring(str, "=" .. filename)
+    if not chunk then
+      return nil, err
+    end
+
+    chunks[#chunks + 1] = chunk
+  end
+
+  return chunks
+end
+
+-------------------------------------------------------------------------------
+
 return
 {
   find_all_files = find_all_files;
@@ -232,4 +277,5 @@ return
   create_path_to_file = create_path_to_file;
   do_atomic_op_with_file = do_atomic_op_with_file;
   load_all_files = load_all_files;
+  load_all_files_with_curly_placeholders = load_all_files_with_curly_placeholders;
 }
