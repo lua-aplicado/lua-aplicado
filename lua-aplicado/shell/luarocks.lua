@@ -178,6 +178,18 @@ local luarocks_parse_installed_rocks = function(list_str)
   return installed_rocks_set, duplicate_rocks_set
 end
 
+local luarocks_load_rockspec = function(filename)
+  local env = { }
+  local ok, result = do_in_environment(
+      assert(
+          loadfile(filename)
+        ),
+      env
+    )
+  assert(result == nil)
+  return env
+end
+
 --------------------------------------------------------------------------------
 
 return
@@ -196,4 +208,5 @@ return
   luarocks_get_rocknames_in_manifest = luarocks_get_rocknames_in_manifest;
   luarocks_install_from = luarocks_install_from;
   luarocks_parse_installed_rocks = luarocks_parse_installed_rocks;
+  luarocks_load_rockspec = luarocks_load_rockspec;
 }
