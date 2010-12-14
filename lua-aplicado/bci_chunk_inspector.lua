@@ -63,7 +63,6 @@ do
       local handlers_stack = { self.chunk_ }
 
       while #handlers_stack ~= 0 do
-        log("stack", handlers_stack, "handler", handlers_stack[#handlers_stack])
         local chunk = handlers_stack[#handlers_stack]
         local info = bci.getheader(chunk)
 
