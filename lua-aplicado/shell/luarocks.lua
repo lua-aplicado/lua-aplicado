@@ -45,6 +45,20 @@ local shell_exec,
         'shell_format_command_no_subst'
       }
 
+local tdeepequals
+      = import 'lua-nucleo/tdeepequals.lua'
+      {
+        'tdeepequals'
+      }
+
+local is_table,
+      is_string
+      = import 'lua-nucleo/type.lua'
+      {
+        'is_table',
+        'is_string'
+      }
+
 --------------------------------------------------------------------------------
 
 local luarocks_exec = function(...)
