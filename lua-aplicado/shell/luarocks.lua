@@ -190,6 +190,76 @@ local luarocks_load_rockspec = function(filename)
   return env
 end
 
+-- Function creates list of all files mentioned in "build" subtable of .rockspec
+-- IN:
+-- filename: absolute path to .rockspec file
+-- current_dir: root directory of rocks sources
+-- OUT:
+-- list of files luarocks will be probably use to make .rock
+-- List is generated based on all keys of "build" subtable of .rockspec
+-- that contain filenames or directory names.
+local luarocks_list_rockspec_files = function(filename, current_dir)
+  arguments(
+      "string", filename,
+      "string", current_dir
+    )
+  local env = luarocks_load_rockspec(filename)
+
+  local files = { filename }
+  local directories = { }
+
+  -- recursive table scanning here
+  local go_through
+  do
+    local function impl(t, dirs, fs, current_dir, visited)
+    arguments(
+        "table", t,
+        "table", dirs,
+        "table", fs,
+        "string", current_dir,
+        "table", visited
+      )
+      for k, v in pairs(t) do
+        if is_table(v) then
+          assert(not visited[v], "recursion detected")
+          visited[v] = true
+          dirs, fs = impl(v, dirs, fs, current_dir, visited)
+          visited[v] = nil
+        else
+          if is_string(v) and v ~= "" then
+            local attr = lfs.attributes(current_dir .. v)
+            if lfs.attributes(current_dir .. v) then
+              if attr.mode == "directory" then
+                dirs[#dirs + 1] = v
+              else
+                fs[#fs + 1] = current_dir .. v
+              end
+            end
+          end
+        end
+      end
+      return dirs, fs
+    end
+
+    go_through = function(t, dirs, fs, current_dir)
+      return impl(t, dirs, fs, current_dir, { })
+    end
+  end
+
+   -- filling files and directories table
+  directories, files = go_through(env.build, directories, files, current_dir)
+
+  -- scanning directories and adding all files found to files table
+  for i = 1, #directories do
+    local curr_dir_files = find_all_files(current_dir .. directories[i], ".")
+    for j = 1, #curr_dir_files  do
+      files[#files + 1] = curr_dir_files[j]
+    end
+  end
+
+  return files
+end
+
 --------------------------------------------------------------------------------
 
 return
@@ -209,4 +279,5 @@ return
   luarocks_install_from = luarocks_install_from;
   luarocks_parse_installed_rocks = luarocks_parse_installed_rocks;
   luarocks_load_rockspec = luarocks_load_rockspec;
+  luarocks_list_rockspec_files = luarocks_list_rockspec_files;
 }
