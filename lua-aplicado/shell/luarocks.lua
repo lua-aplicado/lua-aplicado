@@ -59,6 +59,12 @@ local is_table,
         'is_string'
       }
 
+local find_all_files
+      = import 'lua-aplicado/filesystem.lua'
+      {
+        'find_all_files'
+      }
+
 --------------------------------------------------------------------------------
 
 local luarocks_exec = function(...)
