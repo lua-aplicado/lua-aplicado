@@ -26,6 +26,12 @@ build = {
          ["lua-aplicado.lj2_chunk_inspector"] = "lua-aplicado/lj2_chunk_inspector.lua";
          ["lua-aplicado.luajit2"] = "lua-aplicado/luajit2.lua";
          ["lua-aplicado.module"] = "lua-aplicado/module.lua";
+         ["lua-aplicado.shell"] = "lua-aplicado/shell.lua";
+         ["lua-aplicado.shell.git"] = "lua-aplicado/shell/git.lua";
+         ["lua-aplicado.shell.luarocks"] = "lua-aplicado/shell/luarocks.lua";
+         ["lua-aplicado.shell.remote"] = "lua-aplicado/shell/remote.lua";
+         ["lua-aplicado.shell.remote_luarocks"] = "lua-aplicado/shell/remote_luarocks.lua";
+         ["lua-aplicado.shell.send_email"] = "lua-aplicado/shell/send_email.lua";
       }
    }
 }
