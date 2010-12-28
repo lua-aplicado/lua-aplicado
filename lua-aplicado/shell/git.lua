@@ -69,7 +69,7 @@ local git_update_index = function(path)
 
   -- TODO: HACK! Remove when Git is fixed.
   -- http://thread.gmane.org/gmane.comp.version-control.git/164216
-  require('socket').sleep(0.1)
+  require('socket').sleep(0.5)
 end
 
 -- WARNING: needs git_update_index()!
