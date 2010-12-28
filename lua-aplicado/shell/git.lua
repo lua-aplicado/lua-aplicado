@@ -63,13 +63,13 @@ local git_get_tracking_branch_name_of_HEAD = function(path)
 end
 
 local git_update_index = function(path)
-  -- TODO: ?! This gives false positives (or does it?)
-  --[[
   assert(git_exec(
       path, "update-index", "-q", "--refresh"
     ) == 0)
-  --]]
-  git_read(path, "status")
+
+  -- TODO: HACK! Remove when Git is fixed.
+  -- http://thread.gmane.org/gmane.comp.version-control.git/164216
+  require('socket').sleep(0.1)
 end
 
 -- WARNING: needs git_update_index()!
