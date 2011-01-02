@@ -30,6 +30,7 @@ return
   git_remote_add = { "lua-aplicado/shell/git.lua" };
   git_remote_rm = { "lua-aplicado/shell/git.lua" };
   git_update_index = { "lua-aplicado/shell/git.lua" };
+  is_directory = { "lua-aplicado/filesystem.lua" };
   load_all_files = { "lua-aplicado/filesystem.lua" };
   load_all_files_with_curly_placeholders = { "lua-aplicado/filesystem.lua" };
   luarocks_admin_exec_dir = { "lua-aplicado/shell/luarocks.lua" };

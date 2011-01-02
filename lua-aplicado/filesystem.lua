@@ -266,6 +266,15 @@ local load_all_files_with_curly_placeholders = function(
   return chunks
 end
 
+local is_directory = function(path)
+  local mode err = lfs.attributes(base_config_filename, 'mode')
+  if not mode then
+    return nil, err
+  end
+
+  return (mode == "directory")
+end
+
 -------------------------------------------------------------------------------
 
 return
@@ -278,4 +287,5 @@ return
   do_atomic_op_with_file = do_atomic_op_with_file;
   load_all_files = load_all_files;
   load_all_files_with_curly_placeholders = load_all_files_with_curly_placeholders;
+  is_directory = is_directory;
 }
