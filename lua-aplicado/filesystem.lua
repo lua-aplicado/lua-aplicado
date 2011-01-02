@@ -267,7 +267,7 @@ local load_all_files_with_curly_placeholders = function(
 end
 
 local is_directory = function(path)
-  local mode err = lfs.attributes(base_config_filename, 'mode')
+  local mode, err = lfs.attributes(path, 'mode')
   if not mode then
     return nil, err
   end
