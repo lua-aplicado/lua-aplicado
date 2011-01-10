@@ -275,6 +275,33 @@ local is_directory = function(path)
   return (mode == "directory")
 end
 
+local does_file_exist = function(filename)
+  return not not lfs.attributes(filename)
+end
+
+-- From penlight (modified)
+--- given a path, return the directory part and a file part.
+-- if there's no directory part, the first value will be empty
+-- @param path A file path
+local function splitpath(path)
+  local i = #path
+  local ch = path:sub(i, i)
+  while i > 0 and ch ~= "/" do
+    i = i - 1
+    ch = path:sub(i, i)
+  end
+  if i == 0 then
+    return '', path
+  else
+    return path:sub(1, i - 1), path:sub(i + 1)
+  end
+end
+
+local get_filename_from_path = function(path)
+  local dirname, filename = splitpath(path)
+  return filename
+end
+
 -------------------------------------------------------------------------------
 
 return
@@ -288,4 +315,7 @@ return
   load_all_files = load_all_files;
   load_all_files_with_curly_placeholders = load_all_files_with_curly_placeholders;
   is_directory = is_directory;
+  does_file_exist = does_file_exist;
+  splitpath = splitpath;
+  get_filename_from_path = get_filename_from_path;
 }

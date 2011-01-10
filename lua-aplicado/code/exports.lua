@@ -9,7 +9,9 @@ return
 {
   create_path_to_file = { "lua-aplicado/filesystem.lua" };
   do_atomic_op_with_file = { "lua-aplicado/filesystem.lua" };
+  does_file_exist = { "lua-aplicado/filesystem.lua" };
   find_all_files = { "lua-aplicado/filesystem.lua" };
+  get_filename_from_path = { "lua-aplicado/filesystem.lua" };
   git_add_directory = { "lua-aplicado/shell/git.lua" };
   git_are_branches_different = { "lua-aplicado/shell/git.lua" };
   git_commit_with_editable_message = { "lua-aplicado/shell/git.lua" };
@@ -69,6 +71,7 @@ return
   shell_read = { "lua-aplicado/shell.lua" };
   shell_read_no_subst = { "lua-aplicado/shell.lua" };
   shell_read_remote = { "lua-aplicado/shell/remote.lua" };
+  splitpath = { "lua-aplicado/filesystem.lua" };
   update_file = { "lua-aplicado/filesystem.lua" };
   write_file = { "lua-aplicado/filesystem.lua" };
 }
