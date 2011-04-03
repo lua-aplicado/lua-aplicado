@@ -302,6 +302,22 @@ local get_filename_from_path = function(path)
   return filename
 end
 
+-- From penlight (modified)
+-- Inspired by path.extension
+local get_extension = function(path)
+  local i = #path
+  local ch = path:sub(i, i)
+  while i > 0 and ch ~= '.' do
+    i = i - 1
+    ch = path:sub(i, i)
+  end
+  if i == 0 then
+    return ''
+  else
+    return path:sub(i + 1)
+  end
+end
+
 -------------------------------------------------------------------------------
 
 return
@@ -318,4 +334,5 @@ return
   does_file_exist = does_file_exist;
   splitpath = splitpath;
   get_filename_from_path = get_filename_from_path;
+  get_extension = get_extension;
 }
