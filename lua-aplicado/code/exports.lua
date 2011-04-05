@@ -11,6 +11,7 @@ return
   do_atomic_op_with_file = { "lua-aplicado/filesystem.lua" };
   does_file_exist = { "lua-aplicado/filesystem.lua" };
   find_all_files = { "lua-aplicado/filesystem.lua" };
+  get_extension = { "lua-aplicado/filesystem.lua" };
   get_filename_from_path = { "lua-aplicado/filesystem.lua" };
   git_add_directory = { "lua-aplicado/shell/git.lua" };
   git_are_branches_different = { "lua-aplicado/shell/git.lua" };
