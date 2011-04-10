@@ -154,7 +154,8 @@ end
 
 --------------------------------------------------------------------------------
 
-local do_atomic_op_with_file = function(filename, action)
+-- do primary operation on file with file lock
+local do_atomic_op_with_file = function(filename, action, ...)
   arguments(
       "string",   filename,
       "function", action
@@ -172,7 +173,7 @@ local do_atomic_op_with_file = function(filename, action)
 
   -- TODO: Do xpcall() instead of pcall()?
   local status
-  status, res, err = pcall(action, file)
+  status, res, err = pcall(action, file, ...)
   if not status or not res then
     lfs.unlock(file)
     if not status then
@@ -327,7 +328,7 @@ return
   read_file = read_file;
   update_file = update_file;
   create_path_to_file = create_path_to_file;
-  do_atomic_op_with_file = do_atomic_op_with_file;
+  do_atomic_op_with_file = do_atomic_op_with_file; -- do atomic operation
   load_all_files = load_all_files;
   load_all_files_with_curly_placeholders = load_all_files_with_curly_placeholders;
   is_directory = is_directory;
