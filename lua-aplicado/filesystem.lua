@@ -4,6 +4,7 @@
 
 local loadfile, loadstring = loadfile, loadstring
 local table_sort = table.sort
+local debug_traceback = debug.traceback
 
 --------------------------------------------------------------------------------
 
@@ -171,9 +172,14 @@ local do_atomic_op_with_file = function(filename, action, ...)
   -- TODO: Very unsafe? Endless loop may occur?
   while not lfs.lock(file, "w") do end
 
+  local err_handler = function(msg)
+    debug_traceback(msg, 3)
+    return msg
+  end
+
   -- TODO: Do xpcall() instead of pcall()?
   local status
-  status, res, err = pcall(action, file, ...)
+  status, res, err = xpcall(action(file, ...), err_handler)
   if not status or not res then
     lfs.unlock(file)
     if not status then
