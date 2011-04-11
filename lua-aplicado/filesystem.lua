@@ -164,7 +164,7 @@ local do_atomic_op_with_file = function(filename, action, ...)
 
   local res, err
 
-  local file, err = io.open(filename, "a+")
+  local file, err = io.open(filename, "r+")
   if not file then
     return nil, "do_atomic_op_with_file, open fails: " .. err
   end
