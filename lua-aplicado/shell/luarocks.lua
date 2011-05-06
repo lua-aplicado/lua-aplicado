@@ -293,6 +293,8 @@ end
 
 return
 {
+  luarocks_read = luarocks_read;
+  luarocks_show_rock_dir = luarocks_show_rock_dir;
   luarocks_exec = luarocks_exec;
   luarocks_exec_no_sudo = luarocks_exec_no_sudo;
   luarocks_exec_dir = luarocks_exec_dir;
