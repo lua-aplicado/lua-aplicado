@@ -1,0 +1,49 @@
+--------------------------------------------------------------------------------
+-- filesystem.lua: shell-dependant code to work with files and directories
+--------------------------------------------------------------------------------
+
+local shell_exec
+      = import 'lua-aplicado/shell.lua'
+      {
+        'shell_exec'
+      }
+
+--------------------------------------------------------------------------------
+local copy_file_to_dir = function(filename, dir)
+  assert(shell_exec(
+      "cp", filename, dir .. "/"
+    ) == 0)
+end
+-------------------------------------------------------------------------------
+local remove_file = function(filename)
+  assert(shell_exec(
+      "rm", filename
+    ) == 0)
+end
+-------------------------------------------------------------------------------
+local create_symlink_from_to = function(from_filename, to_filename)
+  assert(shell_exec(
+      "ln", "-s", from_filename, to_filename
+    ) == 0)
+end
+-------------------------------------------------------------------------------
+local copy_file = function(filename, new_filename)
+  assert(shell_exec(
+      "cp", filename, new_filename
+    ) == 0)
+end
+-------------------------------------------------------------------------------
+local copy_file_with_flag = function(filename, new_filename, flag)
+  assert(shell_exec(
+      "cp", flag, filename, new_filename
+    ) == 0)
+end
+-------------------------------------------------------------------------------
+return
+{
+  copy_file_to_dir = copy_file_to_dir;
+  remove_file = remove_file;
+  create_symlink_from_to = create_symlink_from_to;
+  copy_file = copy_file;
+  copy_file_with_flag = copy_file_with_flag;
+}
