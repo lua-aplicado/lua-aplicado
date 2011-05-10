@@ -49,6 +49,7 @@ return
 {
   copy_file_to_dir = copy_file_to_dir;
   remove_file = remove_file;
+  remove_recursively = remove_recursively;
   create_symlink_from_to = create_symlink_from_to;
   copy_file = copy_file;
   copy_file_with_flag = copy_file_with_flag;
