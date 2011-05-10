@@ -7,7 +7,11 @@
 
 return
 {
+  copy_file = { "lua-aplicado/shell/filesystem.lua" };
+  copy_file_to_dir = { "lua-aplicado/shell/filesystem.lua" };
+  copy_file_with_flag = { "lua-aplicado/shell/filesystem.lua" };
   create_path_to_file = { "lua-aplicado/filesystem.lua" };
+  create_symlink_from_to = { "lua-aplicado/shell/filesystem.lua" };
   do_atomic_op_with_file = { "lua-aplicado/filesystem.lua" };
   does_file_exist = { "lua-aplicado/filesystem.lua" };
   find_all_files = { "lua-aplicado/filesystem.lua" };
@@ -51,13 +55,16 @@ return
   luarocks_make_in = { "lua-aplicado/shell/luarocks.lua" };
   luarocks_pack_to = { "lua-aplicado/shell/luarocks.lua" };
   luarocks_parse_installed_rocks = { "lua-aplicado/shell/luarocks.lua" };
+  luarocks_read = { "lua-aplicado/shell/luarocks.lua" };
   luarocks_remove_forced = { "lua-aplicado/shell/luarocks.lua" };
+  luarocks_show_rock_dir = { "lua-aplicado/shell/luarocks.lua" };
   make_chunk_inspector = { "lua-aplicado/chunk_inspector.lua" };
   read_file = { "lua-aplicado/filesystem.lua" };
   remote_luarocks_ensure_rock_not_installed_forced = { "lua-aplicado/shell/remote_luarocks.lua" };
   remote_luarocks_install_from = { "lua-aplicado/shell/remote_luarocks.lua" };
   remote_luarocks_list_installed_rocks = { "lua-aplicado/shell/remote_luarocks.lua" };
   remote_luarocks_remove_forced = { "lua-aplicado/shell/remote_luarocks.lua" };
+  remove_file = { "lua-aplicado/shell/filesystem.lua" };
   running_under_luajit = { "lua-aplicado/luajit2.lua" };
   send_email = { "lua-aplicado/shell/send_email.lua" };
   shell_escape = { "lua-aplicado/shell.lua" };
