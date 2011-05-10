@@ -2,6 +2,8 @@
 -- filesystem.lua: shell-dependant code to work with files and directories
 --------------------------------------------------------------------------------
 
+local os = os
+
 local shell_exec
       = import 'lua-aplicado/shell.lua'
       {
@@ -16,10 +18,8 @@ local copy_file_to_dir = function(filename, dir)
 end
 -------------------------------------------------------------------------------
 local remove_file = function(filename)
-  assert(shell_exec(
-      "rm", filename
-    ) == 0)
-end
+  assert(os.remove(filename))
+end 
 -------------------------------------------------------------------------------
 local create_symlink_from_to = function(from_filename, to_filename)
   assert(shell_exec(
