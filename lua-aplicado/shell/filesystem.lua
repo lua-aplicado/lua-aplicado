@@ -19,7 +19,13 @@ end
 -------------------------------------------------------------------------------
 local remove_file = function(filename)
   assert(os.remove(filename))
-end 
+end
+-------------------------------------------------------------------------------
+local remove_recursively = function(filename)
+  assert(shell_exec(
+      "rm", "-r", filename
+    ) == 0)
+end
 -------------------------------------------------------------------------------
 local create_symlink_from_to = function(from_filename, to_filename)
   assert(shell_exec(
