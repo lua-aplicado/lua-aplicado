@@ -7,6 +7,7 @@
 
 return
 {
+  LOM_ATTRS = { "lua-aplicado/expat.lua" };
   copy_file = { "lua-aplicado/shell/filesystem.lua" };
   copy_file_to_dir = { "lua-aplicado/shell/filesystem.lua" };
   copy_file_with_flag = { "lua-aplicado/shell/filesystem.lua" };
@@ -83,4 +84,5 @@ return
   splitpath = { "lua-aplicado/filesystem.lua" };
   update_file = { "lua-aplicado/filesystem.lua" };
   write_file = { "lua-aplicado/filesystem.lua" };
+  xml_convert_lom = { "lua-aplicado/expat.lua" };
 }
