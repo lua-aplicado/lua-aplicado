@@ -1,16 +1,19 @@
 --------------------------------------------------------------------------------
 -- expat.lua: basic code to convert lxp.lom object to table with tags as a keys
 --------------------------------------------------------------------------------
+
 local unique_object
       = import 'lua-nucleo/misc.lua'
       {
         'unique_object'
       }
+
 local trim
       = import 'lua-nucleo/string.lua'
       {
         'trim'
       }
+
 local arguments,
       optional_arguments,
       method_arguments
@@ -21,17 +24,23 @@ local arguments,
         'method_arguments'
       }
 
+------------------------------------------------------------------------
+
 do
   local LOM_ATTRS = unique_object()
 
-  local xml_convert_attrs = function(attrs)
-    local attr = { }
+  --reads a list of attributes from a intger-index part of source table and return the table of the form "attribute name" => "value"
+  --example:
+  --source table: attr={"id","status","sum",status="150",sum="0.05",id="FF00"}
+  --result: {status="150",sum="0.05",id="FF00"}
+  local xml_convert_attrs = function(src)
+    local dest = { }
 
-    for i = 1, #attrs do
-      attr[attrs[i]] = attrs[attrs[i]]
+    for i = 1, #src do
+      dest[src[i]] = src[src[i]]
     end
 
-    return attr
+    return dest
   end
 
   local function impl(t, visited)
@@ -42,7 +51,7 @@ do
 
     local result = { }
 
-    assert(t.attr, "missing attr")
+    assert(t.attr, "missing attr field")
     result[LOM_ATTRS] = xml_convert_attrs(t.attr)
 
     for i = 1, #t do
@@ -72,12 +81,13 @@ do
 
     return r
   end
-return
 
 ------------------------------------------------------------------------
 
+return
 {
   LOM_ATTRS = LOM_ATTRS;
   xml_convert_lom = xml_convert_lom;
 }
+
 end
