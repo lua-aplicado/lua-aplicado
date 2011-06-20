@@ -26,10 +26,11 @@ local arguments,
 
 ------------------------------------------------------------------------
 
+local LOM_ATTRS = unique_object()
+local xml_convert_lom
 do
-  local LOM_ATTRS = unique_object()
-
-  --reads a list of attributes from a intger-index part of source table and return the table of the form "attribute name" => "value"
+  --reads a list of attributes from a intger-index part of source table and
+  -- return the table of the form "attribute name" => "value"
   --example:
   --source table: attr={"id","status","sum",status="150",sum="0.05",id="FF00"}
   --result: {status="150",sum="0.05",id="FF00"}
@@ -73,7 +74,7 @@ do
     return result
   end
 
-  local xml_convert_lom = function(t)
+  xml_convert_lom = function(t)
     local r = { }
 
     assert(t.tag, "missing tag name")
@@ -81,6 +82,7 @@ do
 
     return r
   end
+end
 
 ------------------------------------------------------------------------
 
@@ -89,5 +91,3 @@ return
   LOM_ATTRS = LOM_ATTRS;
   xml_convert_lom = xml_convert_lom;
 }
-
-end
