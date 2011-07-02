@@ -46,8 +46,17 @@ local function find_all_files(path, regexp, dest, mode)
     if filename ~= "." and filename ~= ".." then
       local filepath = path .. "/" .. filename
       local attr = lfs.attributes(filepath)
+
+      if not attr then
+        assert(false, "bad file attributes: " .. filepath)
+        return nil, "bad file attributes: " .. filepath
+      end
+
       if attr.mode == "directory" then
-        find_all_files(filepath, regexp, dest)
+        local res, err = find_all_files(filepath, regexp, dest)
+        if not res then
+          return res, err
+        end
       elseif not mode or attr.mode == mode then
         if filename:find(regexp) then
           dest[#dest + 1] = filepath
