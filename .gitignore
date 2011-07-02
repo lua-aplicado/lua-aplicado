@@ -7,5 +7,12 @@
 .project
 .settings
 
+*.kdevelop.*
+*.kdevelop
+*.kdevses
+*.kdev4
+/Doxyfile
+/tags
+
 /lua-nucleo
 *.kate_swp
