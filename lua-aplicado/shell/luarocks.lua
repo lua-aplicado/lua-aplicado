@@ -279,7 +279,7 @@ do
 
     -- scanning directories and adding all files found to files table
     for i = 1, #directories do
-      local curr_dir_files = find_all_files(current_dir .. directories[i], ".")
+      local curr_dir_files, err = assert(find_all_files(current_dir .. directories[i], "."))
       for j = 1, #curr_dir_files  do
         files[#files + 1] = curr_dir_files[j]
       end
