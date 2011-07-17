@@ -59,6 +59,11 @@ local is_table,
         'is_string'
       }
 
+local trim =
+      import "lua-nucleo/string.lua" {
+        'trim'
+      }
+
 local find_all_files
       = import 'lua-aplicado/filesystem.lua'
       {
@@ -76,7 +81,7 @@ local luarocks_read = function(...)
 end
 
 local luarocks_show_rock_dir = function(...)
-  return luarocks_read("show", "--rock-dir", ...)
+  return trim(luarocks_read("show", "--rock-dir", ...))
 end
 
 local luarocks_exec_no_sudo = function(...)
