@@ -81,8 +81,12 @@ local luarocks_read = function(...)
   return shell_read("sudo", "luarocks", ...)
 end
 
+local luarocks_read_no_sudo = function(...)
+  return shell_read("luarocks", ...)
+end
+
 local luarocks_show_rock_dir = function(...)
-  return trim(luarocks_read("show", "--rock-dir", ...))
+  return trim(luarocks_read_no_sudo("show", "--rock-dir", ...))
 end
 
 local luarocks_exec_no_sudo = function(...)
