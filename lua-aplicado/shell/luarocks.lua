@@ -77,7 +77,7 @@ local luarocks_exec = function(...)
 end
 
 local luarocks_read = function(...)
-  return shell_read("sudo", "luarocks", ...)
+  return shell_read("luarocks", ...)
 end
 
 local luarocks_show_rock_dir = function(...)
