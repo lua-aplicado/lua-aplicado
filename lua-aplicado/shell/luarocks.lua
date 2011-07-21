@@ -60,7 +60,8 @@ local is_table,
       }
 
 local trim =
-      import "lua-nucleo/string.lua" {
+      import "lua-nucleo/string.lua"
+      {
         'trim'
       }
 
