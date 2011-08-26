@@ -25,6 +25,7 @@ build = {
          ["lua-aplicado.code.exports"] = "lua-aplicado/code/exports.lua";
          ["lua-aplicado.code.globals"] = "lua-aplicado/code/globals.lua";
          ["lua-aplicado.code.profile"] = "lua-aplicado/code/profile.lua";
+         ["lua-aplicado.csv"] = "lua-aplicado/csv.lua";
          ["lua-aplicado.expat"] = "lua-aplicado/expat.lua";
          ["lua-aplicado.filesystem"] = "lua-aplicado/filesystem.lua";
          ["lua-aplicado.lj2_chunk_inspector"] = "lua-aplicado/lj2_chunk_inspector.lua";

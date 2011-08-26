@@ -13,6 +13,7 @@ return
   copy_file_with_flag = { "lua-aplicado/shell/filesystem.lua" };
   create_path_to_file = { "lua-aplicado/filesystem.lua" };
   create_symlink_from_to = { "lua-aplicado/shell/filesystem.lua" };
+  csv_convert_to_table = { "lua-aplicado/csv.lua" };
   do_atomic_op_with_file = { "lua-aplicado/filesystem.lua" };
   does_file_exist = { "lua-aplicado/filesystem.lua" };
   find_all_files = { "lua-aplicado/filesystem.lua" };
