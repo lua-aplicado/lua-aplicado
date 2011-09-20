@@ -2,7 +2,7 @@
 -- 0001-filesystem.lua: tests for file system
 --------------------------------------------------------------------------------
 
-local make_suite = assert(loadfile('test-lib/init.lua')((...)))
+local make_suite = ...
 
 --------------------------------------------------------------------------------
 
@@ -42,13 +42,6 @@ local assert_is_string
       = import 'lua-nucleo/typeassert.lua'
       {
         'assert_is_string'
-      }
-
--- TODO: Should use smth like fork_processes()
-local do_with_servers
-      = import 'test-lib/server.lua'
-      {
-        'do_with_servers'
       }
 
 local find_all_files,
@@ -98,7 +91,8 @@ test:group 'do_atomic_op_with_file'
 
 --------------------------------------------------------------------------------
 
-test "update-file-from-2-threads" (function()
+-- TODO: broken, due do_with_server dependency
+test:BROKEN "update-file-from-2-threads" (function()
   local TEST_FILE_DO_ATOMIC = register_temp_file("./data/test_do_atomic")
 
   local make_callback = function(op_timeout, data)
@@ -157,6 +151,13 @@ test:UNTESTED "write_file"
 test:UNTESTED "read_file"
 test:UNTESTED "update_file"
 test:UNTESTED "create_path_to_file"
+test:UNTESTED "load_all_files"
+test:UNTESTED "does_file_exist"
+test:UNTESTED "is_directory"
+test:UNTESTED "load_all_files_with_curly_placeholders"
+test:UNTESTED "get_filename_from_path"
+test:UNTESTED "get_extension"
+test:UNTESTED "splitpath"
 
 --------------------------------------------------------------------------------
 
