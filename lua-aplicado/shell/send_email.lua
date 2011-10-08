@@ -31,16 +31,6 @@ local shell_exec,
         'shell_read'
       }
 
-local make_loggers
-      = import 'pk-core/log.lua'
-      {
-        'make_loggers'
-      }
-
---------------------------------------------------------------------------------
-
-local log, dbg, spam, log_error = make_loggers("shell/send_email", "SSE")
-
 --------------------------------------------------------------------------------
 
 local send_email = function(from, to, cc, bcc, subject, body)
@@ -88,9 +78,7 @@ generate_email | /usr/sbin/sendmail -t
     body = body;
   }
 
-  local cmd = assert(fill_placeholders(cmd_template, values))
-  --log(cmd)
-  return os.execute(cmd)
+  return os.execute(assert(fill_placeholders(cmd_template, values)))
 end
 
 --------------------------------------------------------------------------------
