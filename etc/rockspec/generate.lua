@@ -52,7 +52,8 @@ dependencies = {
    "lua-nucleo >= 0.0.1",
    "luafilesystem >= 1.5.0",
    "lbci >= 20090306",
-   "luasocket >= 2.0.2"
+   "luasocket >= 2.0.2",
+   "luaposix >= 5.1.15-20111010"
 }
 build = {
    type = "none",
