@@ -44,6 +44,13 @@ local make_concatter
 
 --------------------------------------------------------------------------------
 
+-- TODO: move this to luaposix
+-- GH#2 -- https://github.com/lua-aplicado/lua-aplicado/issues/2
+-- Standard descriptors
+local STDIN_FILENO = 0
+local STDOUT_FILENO = 1
+local STDERR_FILENO = 2
+
 local shell_escape -- Allowing shell substitutions to happen
 local shell_escape_no_subst
 do
@@ -137,6 +144,19 @@ local shell_exec_no_subst = function(...)
   return assert(os_execute(cmd))
 end
 
+-- Convience wrapper around posix.wait, also ensure rc == 0
+-- throwing error() if rc > 0 happens
+local shell_wait = function(pid, cmd)
+  local wpid, status, rc = posix_wait(pid)
+  if wpid == pid  then
+    if rc > 0 then
+      error("command `" .. cmd .. "' stopped with rc==" .. tostring(rc))
+    end
+  else
+    error("can't wait for `" .. cmd .. "' [" .. tostring(pid) .. "]")
+  end
+end
+
 -- Alternative io.popen, able to catch errors from subprocesses
 -- Not compatible with popen, return blob with all output
 -- Also, have different behavior with io.popen in lua 5.2, by closing stdin
@@ -170,21 +190,10 @@ local shell_read_popen = function(cmd)
 
     -- wait child process, and check rc
     -- if wpid not equal pid then raise error
-
-    local wpid, status, rc = posix_wait(pid)
-    if wpid == pid  then
-      if rc > 0 then
-        error("command `" .. cmd .. "' stopped with rc==" .. rc)
-      end
-    else
-      error("can't waid for `" .. cmd .. "' [" .. pid .. "]")
-    end
+    shell_wait(pid, cmd)
     return concat()
   else
     -- in child process:
-    local STDIN_FILENO = 0
-    local STDOUT_FILENO = 1
-    local STDERR_FILENO = 2
 
     -- force stdin = /dev/null
     local dev_null = posix_open("/dev/null", {}, "r")
