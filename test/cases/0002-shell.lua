@@ -7,10 +7,12 @@ local make_suite = ...
 --------------------------------------------------------------------------------
 
 local shell_read,
+      shell_exec,
       exports
       = import 'lua-aplicado/shell.lua'
       {
-        'shell_read'
+        'shell_read',
+        'shell_exec'
       }
 
 local ensure,
@@ -45,13 +47,22 @@ test:test_for "shell_read" (function()
       )
 end)
 
+--------------------------------------------------------------------------------
+
+test:test_for "shell_exec" (function ()
+    ensure_equals("/bin/true", 0, shell_exec("/bin/true"))
+    local rc = shell_exec("/bin/false")
+    ensure("/bin/false", rc ~= 0)
+end)
+
+--------------------------------------------------------------------------------
+
 test:UNTESTED "shell_format_command_no_subst"
 test:UNTESTED "shell_escape_many"
 test:UNTESTED "shell_escape_no_subst"
 test:UNTESTED "shell_exec_no_subst"
 test:UNTESTED "shell_escape"
 test:UNTESTED "shell_format_command"
-test:UNTESTED "shell_exec"
 test:UNTESTED "shell_read_no_subst"
 test:UNTESTED "shell_escape_many_no_subst"
 
