@@ -223,6 +223,63 @@ local shell_read_no_subst = function(...)
   return shell_read_popen(shell_format_command_no_subst(...))
 end
 
+local shell_write_impl = function(text, cmd)
+  local rpipe, wpipe = posix_pipe()
+  if rpipe == nil then
+    local err = wpipe
+    error("can't create pipe: " .. err)
+  end
+  local pid = posix_fork()
+  if pid < 0 then
+    error("can't fork")
+  end
+  if pid > 0 then
+    -- in parent:
+    -- close fd of "remote" side of pipe, we do not use it
+    posix_close(rpipe)
+
+    -- don't care on errors, if process died -- shell_wait handle this
+    -- if we throw exception here -- pid still unwaited
+    posix_write(wpipe, text)
+    posix_close(wpipe)
+
+    -- shell_write_async do only half of job
+    return pid
+  else
+    -- in child process:
+    -- close "remote" side of pipe, and attach pipe to stdout
+    posix_close(wpipe)
+
+    -- push rpipe to child stdin
+    posix_dup2(rpipe, STDIN_FILENO)
+    -- TODO: should explicitly close all descriptors, except 0,1,2
+    -- GH#1 -- https://github.com/lua-aplicado/lua-aplicado/issues/1
+    err, msg = posix_exec("/bin/sh", "-c", cmd)
+
+    -- we can't raise exceptions here
+    posix.write(STDERR_FILENO, "can't exec:" .. (msg or "unreachable") .. "\n")
+    os.exit(1)
+  end
+end
+
+local shell_write_async = function(text, ...)
+  return shell_read_write(text, shell_format_command(...))
+end
+
+local shell_write = function(text, ...)
+  local cmd = shell_format_command(...)
+  shell_wait(shell_write_impl(text, cmd), cmd)
+end
+
+local shell_write_async_no_subst = function(text, ...)
+  return shell_read_write(text, shell_format_command_no_subst(...))
+end
+
+local shell_write_no_subst = function(text, ...)
+  local cmd = shell_format_command_no_subst(...)
+  shell_wait(shell_write_impl(text, cmd), cmd)
+end
+
 --------------------------------------------------------------------------------
 
 return
@@ -237,4 +294,9 @@ return
   shell_exec_no_subst = shell_exec_no_subst;
   shell_read = shell_read;
   shell_read_no_subst = shell_read_no_subst;
+  shell_write = shell_write;
+  shell_write_async = shell_write_async;
+  shell_write_no_subst = shell_write_no_subst;
+  shell_write_async_no_subst = shell_write_async_no_subst;
+  shell_wait = shell_wait;
 }

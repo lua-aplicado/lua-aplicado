@@ -7,11 +7,13 @@ local make_suite = ...
 --------------------------------------------------------------------------------
 
 local shell_read,
+      shell_write,
       shell_exec,
       exports
       = import 'lua-aplicado/shell.lua'
       {
         'shell_read',
+        'shell_write',
         'shell_exec'
       }
 
@@ -49,6 +51,30 @@ end)
 
 --------------------------------------------------------------------------------
 
+test:tests_for "shell_write"
+test:case "exit_0" (function ()
+  shell_write("exit 0\n", "/bin/sh")
+end)
+
+-- this test different from "exit 0" by miss newline after command
+test:case "closing_handle" (function ()
+  shell_write("exit 0", "/bin/sh")
+end)
+
+test:case "various_exit_codes" (function ()
+  for code = 1, 2 do
+    ensure_fails_with_substring(
+      "failed rc "..code,
+      (function()
+        shell_write("exit " .. code .. "\n", "/bin/sh")
+      end),
+     "command `/bin/sh' stopped with rc=="..code
+    )
+  end
+end)
+
+--------------------------------------------------------------------------------
+
 test:test_for "shell_exec" (function ()
     ensure_equals("/bin/true", 0, shell_exec("/bin/true"))
     local rc = shell_exec("/bin/false")
@@ -56,6 +82,14 @@ test:test_for "shell_exec" (function ()
 end)
 
 --------------------------------------------------------------------------------
+
+-- shell_wait covered by tests shell_read and shell_write
+test:UNTESTED "shell_wait"
+
+-- shell_write_async covered by shell_write
+test:UNTESTED "shell_write_async"
+test:UNTESTED "shell_write_async_no_subst"
+test:UNTESTED "shell_write_no_subst"
 
 test:UNTESTED "shell_format_command_no_subst"
 test:UNTESTED "shell_escape_many"
