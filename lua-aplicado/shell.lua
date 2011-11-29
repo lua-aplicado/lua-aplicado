@@ -194,23 +194,32 @@ local shell_read_popen = function(cmd)
     return concat()
   else
     -- in child process:
+    pcall(function()
 
-    -- force stdin = /dev/null
-    local dev_null = posix_open("/dev/null", {}, "r")
-    posix_dup2(dev_null, STDIN_FILENO)
-    posix_close(dev_null)
+      -- force stdin = /dev/null
+      local dev_null = posix_open("/dev/null", {}, "r")
+      posix_dup2(dev_null, STDIN_FILENO)
+      posix_close(dev_null)
 
-    -- close "remote" side of pipe, and attach pipe to stdout
-    posix_close(rpipe)
-    posix_dup2(wpipe, STDOUT_FILENO)
-    posix_close(wpipe)
+      -- close "remote" side of pipe, and attach pipe to stdout
+      posix_close(rpipe)
+      posix_dup2(wpipe, STDOUT_FILENO)
+      posix_close(wpipe)
 
-    -- TODO: should explicitly close all descriptors, except 0,1,2
-    -- GH#1 -- https://github.com/lua-aplicado/lua-aplicado/issues/1
-    err, msg = posix_exec("/bin/sh", "-c", cmd)
+      -- TODO: should explicitly close all descriptors, except 0,1,2
+      -- GH#1 -- https://github.com/lua-aplicado/lua-aplicado/issues/1
+      err, msg = posix_exec("/bin/sh", "-c", cmd)
 
-    -- we can't raise exceptions here
-    posix.write(STDERR_FILENO, "can't exec:" .. (msg or "unreachable") .. "\n")
+      -- we can't raise exceptions here
+      posix.write(
+        STDERR_FILENO,
+        "can't exec:" .. (msg or "unreachable") .. "\n"
+      )
+
+    end)
+    -- exit with nonzero exit code if any error occured
+    -- TODO: signal about error to parent via pipe, not via exitcode
+    -- GH#3 -- https://github.com/lua-aplicado/lua-aplicado/issues/1
     os.exit(1)
   end
 end
@@ -246,18 +255,27 @@ local shell_write_impl = function(text, cmd)
     -- shell_write_async do only half of job
     return pid
   else
-    -- in child process:
-    -- close "remote" side of pipe, and attach pipe to stdout
-    posix_close(wpipe)
+    pcall(function()
+      -- in child process:
+      -- close "remote" side of pipe, and attach pipe to stdout
+      posix_close(wpipe)
 
-    -- push rpipe to child stdin
-    posix_dup2(rpipe, STDIN_FILENO)
-    -- TODO: should explicitly close all descriptors, except 0,1,2
-    -- GH#1 -- https://github.com/lua-aplicado/lua-aplicado/issues/1
-    err, msg = posix_exec("/bin/sh", "-c", cmd)
+      -- push rpipe to child stdin
+      posix_dup2(rpipe, STDIN_FILENO)
+      -- TODO: should explicitly close all descriptors, except 0,1,2
+      -- GH#1 -- https://github.com/lua-aplicado/lua-aplicado/issues/1
+      err, msg = posix_exec("/bin/sh", "-c", cmd)
 
-    -- we can't raise exceptions here
-    posix.write(STDERR_FILENO, "can't exec:" .. (msg or "unreachable") .. "\n")
+      -- we can't raise exceptions here
+      posix.write(
+        STDERR_FILENO,
+        "can't exec:" .. (msg or "unreachable") .. "\n"
+      )
+    end)
+
+    -- exit with nonzero exit code if any error occured
+    -- TODO: signal about error to parent via pipe, not via exitcode
+    -- GH#3 -- https://github.com/lua-aplicado/lua-aplicado/issues/1
     os.exit(1)
   end
 end
