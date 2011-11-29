@@ -157,145 +157,155 @@ local shell_wait = function(pid, cmd)
   end
 end
 
--- Alternative io.popen, able to catch errors from subprocesses
--- Not compatible with popen, return blob with all output
--- Also, have different behavior with io.popen in lua 5.2, by closing stdin
--- of child process
-local shell_read_popen = function(cmd)
-  local rpipe, wpipe = posix_pipe()
-  if rpipe == nil then
-    local err = wpipe
-    error("can't create pipe: " .. err)
-  end
-
-  local pid = posix_fork()
-  if pid < 0 then
-    error("can't fork")
-  end
-  if pid > 0 then
-    -- in parent:
-    -- close fd of "remote" side of pipe, we do not use it
-    posix_close(wpipe)
-    local cat, concat = make_concatter()
-    while  true do
-      local buf = posix_read(rpipe, posix_BUFSIZ)
-      if buf == nil or #buf == 0 then
-        break
-      end
-      cat(buf)
+local shell_read
+local shell_read_no_subst
+do
+  -- Alternative io.popen, able to catch errors from subprocesses
+  -- Not compatible with popen, return blob with all output
+  -- Also, have different behavior with io.popen in lua 5.2, by closing stdin
+  -- of child process
+  local shell_read_popen = function(cmd)
+    local rpipe, wpipe = posix_pipe()
+    if rpipe == nil then
+      local err = wpipe
+      error("can't create pipe: " .. err)
     end
 
-    -- close our side of pipe
-    posix_close(rpipe)
+    local pid = posix_fork()
+    if pid < 0 then
+       error("can't fork")
+    end
+    if pid > 0 then
+      -- in parent:
+      -- close fd of "remote" side of pipe, we do not use it
+      posix_close(wpipe)
+      local cat, concat = make_concatter()
+      while  true do
+        local buf = posix_read(rpipe, posix_BUFSIZ)
+        if buf == nil or #buf == 0 then
+          break
+        end
+        cat(buf)
+      end
 
-    -- wait child process, and check rc
-    -- if wpid not equal pid then raise error
-    shell_wait(pid, cmd)
-    return concat()
-  else
-    -- in child process:
-    pcall(function()
-
-      -- force stdin = /dev/null
-      local dev_null = posix_open("/dev/null", {}, "r")
-      posix_dup2(dev_null, STDIN_FILENO)
-      posix_close(dev_null)
-
-      -- close "remote" side of pipe, and attach pipe to stdout
+      -- close our side of pipe
       posix_close(rpipe)
-      posix_dup2(wpipe, STDOUT_FILENO)
-      posix_close(wpipe)
 
-      -- TODO: should explicitly close all descriptors, except 0,1,2
-      -- GH#1 -- https://github.com/lua-aplicado/lua-aplicado/issues/1
-      err, msg = posix_exec("/bin/sh", "-c", cmd)
-
-      -- we can't raise exceptions here
-      posix.write(
-        STDERR_FILENO,
-        "can't exec:" .. (msg or "unreachable") .. "\n"
-      )
-
-    end)
-    -- exit with nonzero exit code if any error occured
-    -- TODO: signal about error to parent via pipe, not via exitcode
-    -- GH#3 -- https://github.com/lua-aplicado/lua-aplicado/issues/1
-    os.exit(1)
-  end
-end
-
-local shell_read = function(...)
-  return shell_read_popen(shell_format_command(...))
-end
-
-local shell_read_no_subst = function(...)
-  return shell_read_popen(shell_format_command_no_subst(...))
-end
-
-local shell_write_impl = function(text, cmd)
-  local rpipe, wpipe = posix_pipe()
-  if rpipe == nil then
-    local err = wpipe
-    error("can't create pipe: " .. err)
-  end
-  local pid = posix_fork()
-  if pid < 0 then
-    error("can't fork")
-  end
-  if pid > 0 then
-    -- in parent:
-    -- close fd of "remote" side of pipe, we do not use it
-    posix_close(rpipe)
-
-    -- don't care on errors, if process died -- shell_wait handle this
-    -- if we throw exception here -- pid still unwaited
-    posix_write(wpipe, text)
-    posix_close(wpipe)
-
-    -- shell_write_async do only half of job
-    return pid
-  else
-    pcall(function()
+      -- wait child process, and check rc
+      -- if wpid not equal pid then raise error
+      shell_wait(pid, cmd)
+      return concat()
+    else
       -- in child process:
-      -- close "remote" side of pipe, and attach pipe to stdout
-      posix_close(wpipe)
+      pcall(function()
 
-      -- push rpipe to child stdin
-      posix_dup2(rpipe, STDIN_FILENO)
-      -- TODO: should explicitly close all descriptors, except 0,1,2
-      -- GH#1 -- https://github.com/lua-aplicado/lua-aplicado/issues/1
-      err, msg = posix_exec("/bin/sh", "-c", cmd)
+        -- force stdin = /dev/null
+        local dev_null = posix_open("/dev/null", {}, "r")
+        posix_dup2(dev_null, STDIN_FILENO)
+        posix_close(dev_null)
 
-      -- we can't raise exceptions here
-      posix.write(
-        STDERR_FILENO,
-        "can't exec:" .. (msg or "unreachable") .. "\n"
-      )
-    end)
+        -- close "remote" side of pipe, and attach pipe to stdout
+        posix_close(rpipe)
+        posix_dup2(wpipe, STDOUT_FILENO)
+        posix_close(wpipe)
 
-    -- exit with nonzero exit code if any error occured
-    -- TODO: signal about error to parent via pipe, not via exitcode
-    -- GH#3 -- https://github.com/lua-aplicado/lua-aplicado/issues/1
-    os.exit(1)
+        -- TODO: should explicitly close all descriptors, except 0,1,2
+        -- GH#1 -- https://github.com/lua-aplicado/lua-aplicado/issues/1
+        err, msg = posix_exec("/bin/sh", "-c", cmd)
+
+        -- we can't raise exceptions here
+        posix.write(
+            STDERR_FILENO,
+            "can't exec:" .. (msg or "unreachable") .. "\n"
+          )
+
+      end)
+      -- exit with nonzero exit code if any error occured
+      -- TODO: signal about error to parent via pipe, not via exitcode
+      -- GH#3 -- https://github.com/lua-aplicado/lua-aplicado/issues/1
+      os.exit(1)
+    end
+  end
+
+  shell_read = function(...)
+    return shell_read_popen(shell_format_command(...))
+  end
+
+  shell_read_no_subst = function(...)
+    return shell_read_popen(shell_format_command_no_subst(...))
   end
 end
 
-local shell_write_async = function(text, ...)
-  return shell_read_write(text, shell_format_command(...))
-end
+local shell_write_async_no_subst
+local shell_write_async
+local shell_write_no_subst
+local shell_write
+do
+  local shell_write_impl = function(text, cmd)
+    local rpipe, wpipe = posix_pipe()
+    if rpipe == nil then
+      local err = wpipe
+      error("can't create pipe: " .. err)
+    end
+    local pid = posix_fork()
+    if pid < 0 then
+      error("can't fork")
+    end
+    if pid > 0 then
+      -- in parent:
+      -- close fd of "remote" side of pipe, we do not use it
+      posix_close(rpipe)
 
-local shell_write = function(text, ...)
-  local cmd = shell_format_command(...)
-  shell_wait(shell_write_impl(text, cmd), cmd)
-end
+      -- don't care on errors, if process died -- shell_wait handle this
+      -- if we throw exception here -- pid still unwaited
+      posix_write(wpipe, text)
+      posix_close(wpipe)
 
-local shell_write_async_no_subst = function(text, ...)
-  return shell_read_write(text, shell_format_command_no_subst(...))
-end
+      -- shell_write_async do only half of job
+      return pid
+    else
+      pcall(function()
+        -- in child process:
+        -- close "remote" side of pipe, and attach pipe to stdout
+        posix_close(wpipe)
 
-local shell_write_no_subst = function(text, ...)
-  local cmd = shell_format_command_no_subst(...)
-  shell_wait(shell_write_impl(text, cmd), cmd)
+        -- push rpipe to child stdin
+        posix_dup2(rpipe, STDIN_FILENO)
+        -- TODO: should explicitly close all descriptors, except 0,1,2
+        -- GH#1 -- https://github.com/lua-aplicado/lua-aplicado/issues/1
+        err, msg = posix_exec("/bin/sh", "-c", cmd)
+
+        -- we can't raise exceptions here
+        posix.write(
+            STDERR_FILENO,
+            "can't exec:" .. (msg or "unreachable") .. "\n"
+          )
+      end)
+
+      -- exit with nonzero exit code if any error occured
+      -- TODO: signal about error to parent via pipe, not via exitcode
+      -- GH#3 -- https://github.com/lua-aplicado/lua-aplicado/issues/1
+      os.exit(1)
+    end
+  end
+
+  shell_write_async = function(text, ...)
+    return shell_read_write(text, shell_format_command(...))
+  end
+
+  shell_write = function(text, ...)
+    local cmd = shell_format_command(...)
+    shell_wait(shell_write_impl(text, cmd), cmd)
+  end
+
+  shell_write_async_no_subst = function(text, ...)
+    return shell_read_write(text, shell_format_command_no_subst(...))
+  end
+
+  shell_write_no_subst = function(text, ...)
+    local cmd = shell_format_command_no_subst(...)
+    shell_wait(shell_write_impl(text, cmd), cmd)
+  end
 end
 
 --------------------------------------------------------------------------------
