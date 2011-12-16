@@ -21,9 +21,10 @@ local remove_file = function(filename)
   assert(os.remove(filename))
 end
 -------------------------------------------------------------------------------
-local remove_recursively = function(filename)
+local remove_recursively = function(filename, force)
+  local args = force and "-rf" or "-r"
   assert(shell_exec(
-      "rm", "-r", filename
+      "rm", args, filename
     ) == 0)
 end
 -------------------------------------------------------------------------------
