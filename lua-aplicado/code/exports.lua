@@ -83,6 +83,11 @@ return
   shell_read = { "lua-aplicado/shell.lua" };
   shell_read_no_subst = { "lua-aplicado/shell.lua" };
   shell_read_remote = { "lua-aplicado/shell/remote.lua" };
+  shell_wait = { "lua-aplicado/shell.lua" };
+  shell_write = { "lua-aplicado/shell.lua" };
+  shell_write_async = { "lua-aplicado/shell.lua" };
+  shell_write_async_no_subst = { "lua-aplicado/shell.lua" };
+  shell_write_no_subst = { "lua-aplicado/shell.lua" };
   splitpath = { "lua-aplicado/filesystem.lua" };
   update_file = { "lua-aplicado/filesystem.lua" };
   write_file = { "lua-aplicado/filesystem.lua" };
