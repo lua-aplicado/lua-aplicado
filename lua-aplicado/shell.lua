@@ -223,7 +223,9 @@ do
       -- exit with nonzero exit code if any error occured
       -- TODO: signal about error to parent via pipe, not via exitcode
       -- GH#3 -- https://github.com/lua-aplicado/lua-aplicado/issues/1
-      os.exit(1)
+      --
+      -- NOTE: false as second parameter, to avoid finalizer run on LuaJIT2
+      os.exit(1, false)
     end
   end
 
@@ -285,7 +287,9 @@ do
       -- exit with nonzero exit code if any error occured
       -- TODO: signal about error to parent via pipe, not via exitcode
       -- GH#3 -- https://github.com/lua-aplicado/lua-aplicado/issues/1
-      os.exit(1)
+      --
+      -- NOTE: false as second parameter, to avoid finalizer run on LuaJIT2
+      os.exit(1, false)
     end
   end
 
