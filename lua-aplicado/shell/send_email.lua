@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- git.lua: dumb ad-hoc code to work with git
+-- send_email.lua: dumb ad-hoc code to send emails
 --------------------------------------------------------------------------------
 
 local assert
