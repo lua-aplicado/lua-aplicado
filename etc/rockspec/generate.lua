@@ -53,7 +53,9 @@ dependencies = {
    "luafilesystem >= 1.5.0",
    "lbci >= 20090306",
    "luasocket >= 2.0.2",
-   "luaposix >= 5.1.15-20111010"
+   "luaposix >= 5.1.15-1",
+   "lpeg",
+   "md5"
 }
 build = {
    type = "none",
