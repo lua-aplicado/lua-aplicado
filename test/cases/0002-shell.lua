@@ -1,5 +1,7 @@
 --------------------------------------------------------------------------------
--- 0002-shell-read.lua: tests for shell piping
+-- 0002-shell.lua: tests for shell piping
+-- This file is a part of Lua-Aplicado library
+-- Copyright (c) Lua-Aplicado authors (see file `COPYRIGHT` for the license)
 --------------------------------------------------------------------------------
 
 local make_suite = ...

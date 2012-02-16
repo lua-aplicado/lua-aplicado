@@ -1,5 +1,7 @@
 --------------------------------------------------------------------------------
 -- lj2_chunk_inspector.lua: basic Lua chunk inspector based on LJ2 API
+-- This file is a part of Lua-Aplicado library
+-- Copyright (c) Lua-Aplicado authors (see file `COPYRIGHT` for the license)
 --------------------------------------------------------------------------------
 
 local string_sub = string.sub

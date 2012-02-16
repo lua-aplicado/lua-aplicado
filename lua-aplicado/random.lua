@@ -1,5 +1,7 @@
 --------------------------------------------------------------------------------
 -- random.lua: utilities for random generation
+-- This file is a part of Lua-Aplicado library
+-- Copyright (c) Lua-Aplicado authors (see file `COPYRIGHT` for the license)
 --------------------------------------------------------------------------------
 
 require 'md5'

@@ -1,5 +1,7 @@
 --------------------------------------------------------------------------------
--- rockspec/generate.lua: lua-aplicado dumb rockspec generator
+-- generate.lua: lua-aplicado dumb rockspec generator
+-- This file is a part of Lua-Aplicado library
+-- Copyright (c) Lua-Aplicado authors (see file `COPYRIGHT` for the license)
 --------------------------------------------------------------------------------
 
 pcall(require, 'luarocks.require') -- Ignoring errors

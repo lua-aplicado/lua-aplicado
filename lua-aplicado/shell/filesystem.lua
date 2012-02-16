@@ -1,5 +1,7 @@
 --------------------------------------------------------------------------------
 -- filesystem.lua: shell-dependant code to work with files and directories
+-- This file is a part of Lua-Aplicado library
+-- Copyright (c) Lua-Aplicado authors (see file `COPYRIGHT` for the license)
 --------------------------------------------------------------------------------
 
 local os = os

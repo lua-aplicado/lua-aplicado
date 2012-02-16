@@ -1,5 +1,7 @@
 --------------------------------------------------------------------------------
 -- chunk_inspector.lua: basic Lua chunk inspector with support for LJ2
+-- This file is a part of Lua-Aplicado library
+-- Copyright (c) Lua-Aplicado authors (see file `COPYRIGHT` for the license)
 --------------------------------------------------------------------------------
 
 local arguments,

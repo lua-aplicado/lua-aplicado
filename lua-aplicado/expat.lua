@@ -1,5 +1,7 @@
 --------------------------------------------------------------------------------
 -- expat.lua: basic code to convert lxp.lom object to table with tags as a keys
+-- This file is a part of Lua-Aplicado library
+-- Copyright (c) Lua-Aplicado authors (see file `COPYRIGHT` for the license)
 --------------------------------------------------------------------------------
 
 local unique_object

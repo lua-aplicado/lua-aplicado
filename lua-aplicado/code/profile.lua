@@ -1,5 +1,7 @@
 --------------------------------------------------------------------------------
 -- profile.lua: lua-aplicado exports profile
+-- This file is a part of Lua-Aplicado library
+-- Copyright (c) Lua-Aplicado authors (see file `COPYRIGHT` for the license)
 --------------------------------------------------------------------------------
 
 local tset = import 'lua-nucleo/table-utils.lua' { 'tset' }

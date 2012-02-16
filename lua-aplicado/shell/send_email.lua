@@ -1,5 +1,7 @@
 --------------------------------------------------------------------------------
 -- send_email.lua: dumb ad-hoc code to send emails
+-- This file is a part of Lua-Aplicado library
+-- Copyright (c) Lua-Aplicado authors (see file `COPYRIGHT` for the license)
 --------------------------------------------------------------------------------
 
 local assert

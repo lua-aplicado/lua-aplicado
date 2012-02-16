@@ -1,5 +1,7 @@
 --------------------------------------------------------------------------------
 -- 0001-filesystem.lua: tests for file system
+-- This file is a part of Lua-Aplicado library
+-- Copyright (c) Lua-Aplicado authors (see file `COPYRIGHT` for the license)
 --------------------------------------------------------------------------------
 
 local make_suite = ...

@@ -1,5 +1,7 @@
 --------------------------------------------------------------------------------
 -- csv.lua: basic code to convert csv-data to lua table
+-- This file is a part of Lua-Aplicado library
+-- Copyright (c) Lua-Aplicado authors (see file `COPYRIGHT` for the license)
 --
 -- Based on MIT-licensed[1] csv.lua[2] from LuaPlus[3].
 -- [1] https://github.com/jjensen/luaplus51-all/blob/ac2808f1192aa435e7e3c4fb5789414256b4caf9/License.txt
