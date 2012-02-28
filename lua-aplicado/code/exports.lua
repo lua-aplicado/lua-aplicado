@@ -63,6 +63,7 @@ return
   luarocks_remove_forced = { "lua-aplicado/shell/luarocks.lua" };
   luarocks_show_rock_dir = { "lua-aplicado/shell/luarocks.lua" };
   make_chunk_inspector = { "lua-aplicado/chunk_inspector.lua" };
+  make_cookie_jar = { "lua-aplicado/web/cookie_jar.lua" };
   random_seed_from_string = { "lua-aplicado/random.lua" };
   read_file = { "lua-aplicado/filesystem.lua" };
   remote_luarocks_ensure_rock_not_installed_forced = { "lua-aplicado/shell/remote_luarocks.lua" };

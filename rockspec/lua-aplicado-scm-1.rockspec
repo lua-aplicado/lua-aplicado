@@ -12,6 +12,7 @@ description = {
 dependencies = {
    "lua >= 5.1",
    "lua-nucleo >= 0.0.1",
+   "lua-getdate >= 0.1-1",
    "luafilesystem >= 1.5.0",
    "lbci >= 20090306",
    "luasocket >= 2.0.2",
@@ -42,6 +43,7 @@ build = {
          ["lua-aplicado.shell.remote"] = "lua-aplicado/shell/remote.lua";
          ["lua-aplicado.shell.remote_luarocks"] = "lua-aplicado/shell/remote_luarocks.lua";
          ["lua-aplicado.shell.send_email"] = "lua-aplicado/shell/send_email.lua";
+         ["lua-aplicado.web.cookie_jar"] = "lua-aplicado/web/cookie_jar.lua";
       }
    }
 }
