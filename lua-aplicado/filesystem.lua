@@ -50,7 +50,7 @@ local function find_all_files(path, regexp, dest, mode)
       local attr = lfs.attributes(filepath)
 
       if not attr then
-        assert(false, "bad file attributes: " .. filepath)
+        error("bad file attributes: " .. filepath)
         return nil, "bad file attributes: " .. filepath
       end
 
