@@ -7,6 +7,8 @@
 local assert
     = assert
 
+local table_concat = table.concat
+
 --------------------------------------------------------------------------------
 
 local arguments,
@@ -19,68 +21,84 @@ local arguments,
         'method_arguments'
       }
 
-local fill_placeholders
+local fill_placeholders,
+      make_concatter
       = import 'lua-nucleo/string.lua'
       {
-        'fill_placeholders'
+        'fill_placeholders',
+        'make_concatter'
       }
 
-local shell_exec,
-      shell_read
+local shell_write
       = import 'lua-aplicado/shell.lua'
       {
-        'shell_exec',
-        'shell_read'
+        'shell_write'
+      }
+
+local is_table
+      = import 'lua-nucleo/type.lua'
+      {
+        'is_table'
       }
 
 --------------------------------------------------------------------------------
 
-local send_email = function(from, to, cc, bcc, subject, body)
-  arguments(
-      "string", from,
-      "string", to,
-      "string", subject,
-      "string", body
-    )
-  optional_arguments(
-      "table",  cc,
-      "table",  bcc
-    )
+local send_email
+local create_email
 
-  local cmd_template = [[
-generate_email()
-{
-#header
-cat <<-EOF
-From: $(from)
-$(rcpt)Subject: $(subject)
-Content-Type: text/plain; charset=utf-8
+do
+  local create_email_with_string_args = function(from, to, cc, bcc, subject, body)
+    arguments(
+        "string", from,
+        "string", to,
+        "string", cc,
+        "string", bcc,
+        "string", subject,
+        "string", body
+      )
 
-$(body)
-EOF
-}
-generate_email | /usr/sbin/sendmail -t
-]]
+    local cat, concat = make_concatter()
 
-  local rcpt = "To: " .. to .. "\n"
+    cat "From: " (from) "\nTo: " (to) "\nCc: " (cc) "\nBcc: " (bcc) "\nSubject: " (subject)
+      "\nContent-Type: text/plain; charset=utf-8\n\n" (body)
 
-  if cc then
-    rcpt = rcpt .. "Cc: " .. table.concat(cc, ", ") .. "\n"
+    return concat()
   end
 
-  if bcc then
-    rcpt = rcpt .. "Bcc: " .. table.concat(bcc, ", ") .. "\n"
+  create_email = function(from, to, cc, bcc, subject, body)
+    if is_table(cc) then
+      cc = table_concat(cc, ", ")
+    end
+    if is_table(bcc) then
+      bcc = table_concat(bcc, ", ")
+    end
+    arguments(
+        "string", from,
+        "string", to,
+        "string", cc,
+        "string", bcc,
+        "string", subject,
+        "string", body
+      )
+
+    return create_email_with_string_args(from, to, cc, bcc, subject, body)
   end
 
-  local values =
-  {
-    from = from;
-    rcpt = rcpt;
-    subject = subject;
-    body = body;
-  }
+  send_email = function(from, to, cc, bcc, subject, body)
+    arguments(
+        "string", from,
+        "string", to,
+        "string", subject,
+        "string", body
+      )
 
-  return os.execute(assert(fill_placeholders(cmd_template, values)))
+    return shell_write(
+        create_email(from, to, cc, bcc, subject, body),
+        "sendmail",
+        "-t"
+      )
+  end
+
 end
 
 --------------------------------------------------------------------------------
@@ -88,4 +106,5 @@ end
 return
 {
   send_email = send_email;
+  create_email = create_email;
 }
