@@ -87,6 +87,7 @@ do
   end
 
   -- TODO: Generalize with above
+  -- GH#4 -- https://github.com/lua-aplicado/lua-aplicado/issues/4
   shell_escape_no_subst = function(s)
     if is_number(s) then
       return assert(tostring(s))

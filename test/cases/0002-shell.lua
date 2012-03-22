@@ -121,7 +121,7 @@ end)
 
 -- TODO: generalize tests for shell_escape and shell_escape_no_subst after
 -- generalizing the functions
-
+  -- GH#4 -- https://github.com/lua-aplicado/lua-aplicado/issues/4
 test:tests_for "shell_escape"
 
 test:case "shell_escape_number" (function ()
