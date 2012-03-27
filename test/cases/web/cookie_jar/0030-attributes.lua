@@ -49,7 +49,7 @@ test 'attributes' (function()
   c:update(
 [[
 , foo=1;expires=Mon, 2032-01-01 00:00:00 GMT+00;path= /;domain=.]] .. HOST .. [[,
- bar = 2;Expires = Wed, 2013-07-23 01:02:03 GMT+00;max-AGE=100   ;secure ;HTTPonlY;domain=;path=-,  
+ bar = 2;Expires = Wed, 2013-07-23 01:02:03 GMT+00;max-AGE=100   ;secure ;HTTPonlY;domain=;path=-,
    baz=  3;httpONLy ;exPireS= Sun, Feb 28 10:18:00 2020 GMT+04,,,
 ]], URL .. 'a'
     )
