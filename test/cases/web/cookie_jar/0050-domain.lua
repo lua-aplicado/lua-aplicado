@@ -43,7 +43,7 @@ test 'domain attribute' (function()
   c:update(
 [[
 , foo=1;expires=Mon, 2013 ;path= /;domain=a.b.c,
- bar = 2;expires = 2013 1:2:3 GMT;max-AGE=0   ;secure ;HTTPonlY;domain=a.q.w.e;path=-,  
+ bar = 2;expires = 2013 1:2:3 GMT;max-AGE=0   ;secure ;HTTPonlY;domain=a.q.w.e;path=-,
    baz=  3;;domain=.e:8080;httpONLy ;expires=,,,
 ]], 'https://q.w.e:8080/a/b'
     )

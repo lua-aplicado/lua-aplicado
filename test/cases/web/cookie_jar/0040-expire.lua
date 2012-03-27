@@ -46,7 +46,7 @@ test 'expire' (function()
   c:update(
 [[
 , foo=1;expires=mon, 1970 ;path= /;domain=another.other.example.com:8081,
- bar = 2;expires =  1:2:3 GMT;max-AGE=0   ;secure ;HTTPonlY;domain=another.other.example.com:8081;path=-,  
+ bar = 2;expires =  1:2:3 GMT;max-AGE=0   ;secure ;HTTPonlY;domain=another.other.example.com:8081;path=-,
    baz=  3;;;;max-aGe=-2;domain=another.other.example.com:8081;httpONLy ;,,,
 ]], 'https://another.example.com:8081/a/b'
     )
