@@ -1,3 +1,12 @@
+Version 0.0.4 (2012-04-16)
+==========================
+
+Fourth fixed-version release
+
+Changes and improvements:
+    etc/list-exports/config.lua: header added
+    make.sh: fix
+
 Version 0.0.3 (2012-04-04)
 ==========================
 
