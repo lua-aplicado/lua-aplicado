@@ -32,9 +32,13 @@ local shell_exec_remote,
 --------------------------------------------------------------------------------
 
 local remote_luarocks_remove_forced = function(host, rock_name)
-  assert(shell_exec_remote(
+  if not shell_exec_remote(
       host, "sudo", "luarocks", "remove", "--force", rock_name
-    ) == 0)
+    ) == 0
+  then
+    log_error("command failed:", host, "sudo luarocks remove --force", rock_name)
+    error("luarocks remove command failed")
+  end
 end
 
 local remote_luarocks_ensure_rock_not_installed_forced = function(host, name)
@@ -44,9 +48,16 @@ local remote_luarocks_ensure_rock_not_installed_forced = function(host, name)
 end
 
 local remote_luarocks_install_from = function(host, rock_name, rocks_repo)
-  assert(shell_exec_remote(
+  if not shell_exec_remote(
       host, "sudo", "luarocks", "install", rock_name, "--only-from="..rocks_repo
-    ) == 0)
+    ) == 0
+  then
+    log_error(
+        "command failed:", host, "sudo luarocks install ", rock_name,
+        " --only-from=", rocks_repo
+      )
+    error("luarocks install command failed")
+  end
 end
 
 local remote_luarocks_list_installed_rocks = function(host)
