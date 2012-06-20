@@ -87,8 +87,10 @@ local luarocks_read_no_sudo = function(...)
   return shell_read("luarocks", ...)
 end
 
-local luarocks_show_rock_dir = function(...)
-  return trim(luarocks_read_no_sudo("show", "--rock-dir", ...))
+local luarocks_show_rock_dir = function(rock)
+  --TODO: http://redmine.tech-zeli.in/issues/1611
+  -- remove stderr redirection when ready
+  return trim(luarocks_read_no_sudo("show", "--rock-dir", rock, "2>&1"))
 end
 
 local luarocks_exec_no_sudo = function(...)
