@@ -78,14 +78,6 @@ Set `CODE_ROOT` Lua variable to path to that directory.
 
 After that use `import()`.
 
-Tests
------
-
-To run tests, create a symlink 'lua-nucleo' to `lua-nucleo/lua-nucleo`
-at the root directory of the project.
-
-(TODO: Note that tests are not yet implemented.)
-
 Documentation
 -------------
 
