@@ -38,10 +38,12 @@ local is_number
 
 local tset = import 'lua-nucleo/table-utils.lua' { 'tset' }
 
-local make_concatter
+local make_concatter,
+      cut_with_ellipsis
       = import 'lua-nucleo/string.lua'
       {
-        'make_concatter'
+        'make_concatter',
+        'cut_with_ellipsis'
       }
 
 --------------------------------------------------------------------------------
@@ -149,11 +151,15 @@ end
 
 -- Convience wrapper around posix.wait, also ensure rc == 0
 -- throwing error() if rc > 0 happens
-local shell_wait = function(pid, cmd)
+local shell_wait = function(pid, cmd, output)
   local wpid, status, rc = posix_wait(pid)
   if wpid == pid  then
     if rc > 0 then
-      error("command `" .. cmd .. "' stopped with rc==" .. tostring(rc))
+      local msg = "command `" .. cmd .. "' stopped with rc==" .. tostring(rc)
+      if output and #output > 0 then
+        msg = msg .. " command output:" .. cut_with_ellipsis(output)
+      end
+      error(msg)
     end
   else
     error("can't wait for `" .. cmd .. "' [" .. tostring(pid) .. "]")
@@ -194,15 +200,18 @@ do
       -- close our side of pipe
       posix_close(rpipe)
 
+      -- TODO: https://github.com/lua-aplicado/lua-aplicado/issues/3
+      -- read also stderr and pass it to shell_wait instead of output
+      local output = concat()
       -- wait child process, and check rc
       -- if wpid not equal pid then raise error
-      shell_wait(pid, cmd)
-      return concat()
+      shell_wait(pid, cmd, output)
+      return output
     else
       -- in child process:
       pcall(function()
 
-        -- force stdin = /dev/null
+      -- force stdin = /dev/null
         local dev_null = posix_open("/dev/null", {}, "r")
         posix_dup2(dev_null, STDIN_FILENO)
         posix_close(dev_null)
