@@ -404,15 +404,6 @@ do
         valid = false
       end
 
-      -- The value for the Domain attribute contains no embedded dots,
-      -- and the value is not .local
-      if cookie.domain then
-        local dot = cookie.domain:find('.', 2, true)
-        if not dot or dot == #cookie.domain then
-          valid = false
-        end
-      end
-
       -- If the canonicalized request-host does not domain-match the
       -- domain-attribute.
       if cookie.domain
