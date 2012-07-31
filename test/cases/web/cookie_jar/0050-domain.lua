@@ -69,6 +69,36 @@ test 'domain attribute' (function()
 
 end)
 
+test 'setting parent domain' (function()
+
+  local c = make_cookie_jar()
+
+  c:update(
+      "foo1=1;domain=example.com, foo2=1;domain=.example.com",
+      'http://sub.example.com'
+    )
+  ensure_tdeepequals(
+      "it's ok to set cookie for parent domain",
+      c:get_all(),
+      {
+        { domain="example.com", path="/", name="foo1", value="1" };
+        { domain="example.com", path="/", name="foo2", value="1" };
+      }
+    )
+end)
+
+test 'setting sub-domain' (function()
+
+  local c = make_cookie_jar()
+
+  c:update("foo=1;domain=sub.example.com", 'http://example.com')
+  ensure_tdeepequals(
+      "it's not ok to set cookie for sub-domain",
+      c:get_all(),
+      { }
+    )
+end)
+
 --------------------------------------------------------------------------------
 
 assert(test:run())
