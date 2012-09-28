@@ -23,6 +23,14 @@ file_is_empty() {
   return $(stat -c%s "$1");
 }
 
+# check '-whitespace' gitattribute for file
+file_has_whitespace_unset() {
+  if [ "$(git check-attr whitespace -- "$1" | awk '{ print $3; }')" == "unset" ]; then
+    return 0
+  fi
+  return 1
+}
+
 if git-rev-parse --verify HEAD 2>/dev/null
 then
         against=HEAD
@@ -39,7 +47,7 @@ git diff-index --check --cached $against -- || exit_code=1
 # N.B. We prune possible empty lines from diff-index output.
 #   They may appear due to empty commits, e.g. during commit --amend
 #
-git diff-index --cached HEAD | egrep '.' | while read -r X rights X hash file_status filename; do
+while read -r X rights X hash file_status filename; do
 
   # exclude symlinks
   [ "${rights}" == "120000" ] && continue
@@ -60,7 +68,7 @@ git diff-index --cached HEAD | egrep '.' | while read -r X rights X hash file_st
   # if file was deleted, checks below are not needed
   if [ "${file_status}" != "D" ]; then
     #check for empty string at the end of file
-    if !(file_is_empty $filename) && !(file_is_binary $filename) && !(git cat-file blob $hash | tail -c1 | grep -q '^$'); then
+    if !(file_is_empty $filename) && !(file_is_binary $filename) && !(git cat-file blob $hash | tail -c1 | grep -q '^$') && !(file_has_whitespace_unset $filename); then
       echo "$filename : no empty line at the end"
       exit_code=1
     fi
@@ -77,6 +85,6 @@ git diff-index --cached HEAD | egrep '.' | while read -r X rights X hash file_st
     esac
   fi
 
-done
+done <<<"$(git diff-index --cached HEAD | egrep '.')"
 
 exit $exit_code
