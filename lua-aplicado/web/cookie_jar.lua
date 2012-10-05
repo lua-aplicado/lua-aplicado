@@ -6,11 +6,11 @@
 
 local setmetatable = setmetatable
 local table_sort = table.sort
-local os_date = os.date
 local os_time = os.time
 
-local getdate = require 'getdate'
-local strptime = getdate.strptime
+local posix = require 'posix'
+local strptime = posix.strptime
+local mktime = posix.mktime
 
 local socket_url = require 'socket.url'
 local url_parse = socket_url.parse
@@ -55,6 +55,10 @@ do
       t = strptime(date_string, '%b %d %H:%M:%S %Y GMT%z')
     end
     if t then
+      -- TODO: https://github.com/lua-aplicado/lua-aplicado/issues/9
+      --       https://github.com/luaposix/luaposix/issues/32
+      -- workaround os.date and strptime incompatibility
+      t.day = t.monthday
       t = time_fn(t)
     end
     return t
