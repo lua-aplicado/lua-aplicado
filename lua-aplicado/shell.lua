@@ -14,9 +14,11 @@ local table_concat = table.concat
 local os_execute = os.execute
 
 local posix_fork, posix_exec, posix_pipe, posix_dup2, posix_wait, posix_close,
-      posix_open, posix_read, posix_write, posix_WNOHANG, posix_BUFSIZ
+      posix_open, posix_read, posix_write, posix_WNOHANG, posix_BUFSIZ,
+      posix_O_RDONLY
     = posix.fork, posix.exec, posix.pipe, posix.dup2, posix.wait, posix.close,
-      posix.open, posix.read, posix.write, posix.WNOHANG, posix.BUFSIZ
+      posix.open, posix.read, posix.write, posix.WNOHANG, posix.BUFSIZ,
+      posix.O_RDONLY
 
 --------------------------------------------------------------------------------
 
@@ -213,7 +215,7 @@ do
       pcall(function()
 
       -- force stdin = /dev/null
-        local dev_null = posix_open("/dev/null", {}, "r")
+        local dev_null = posix_open("/dev/null", posix_O_RDONLY)
         posix_dup2(dev_null, STDIN_FILENO)
         posix_close(dev_null)
 
