@@ -52,6 +52,8 @@ local find_all_files,
       update_file,
       create_path_to_file,
       do_atomic_op_with_file,
+      join_path,
+      normalize_path,
       exports
       = import 'lua-aplicado/filesystem.lua'
       {
@@ -60,7 +62,9 @@ local find_all_files,
         'read_file',
         'update_file',
         'create_path_to_file',
-        'do_atomic_op_with_file'
+        'do_atomic_op_with_file',
+        'join_path',
+        'normalize_path'
       }
 
 
@@ -143,6 +147,85 @@ test:BROKEN "update-file-from-2-threads" (function()
         local actual = read_file(TEST_FILE_DO_ATOMIC)
         ensure_strequals("file content after atomic ops", actual, expected)
       end
+    )
+end)
+
+--------------------------------------------------------------------------------
+
+test:test_for "join_path" (function()
+  ensure_strequals(
+    "regular joininig",
+    join_path('A', 'B'),
+    'A/B'
+    )
+  ensure_strequals(
+    "multiple joininig",
+    join_path('A', 'B', 'C', 'D'),
+    'A/B/C/D'
+    )
+  ensure_strequals(
+    "doesn't add extra slashes, if first path ends with slash",
+    join_path('A/', 'B/'),
+    'A/B/'
+    )
+  ensure_strequals(
+    "doesn't add extra slashes, if second path begins with slash",
+    join_path('/A', '/B'),
+    '/A/B'
+    )
+  ensure_strequals(
+    "joins 'as is', making no normalization: case /./",
+    join_path('./A', './B'),
+    './A/./B'
+    )
+  ensure_strequals(
+    "joins 'as is', making no normalization: case /foo/..",
+    join_path('A/foo/..', 'foo/../B'),
+    'A/foo/../foo/../B'
+    )
+  ensure_strequals(
+    "joins 'as is', making no normalization: case //",
+    join_path('A//B/', '/C//D'),
+    'A//B//C//D'
+    )
+end)
+
+--------------------------------------------------------------------------------
+
+test:tests_for "normalize_path"
+
+test:case "normalize_slashes" (function()
+  ensure_strequals(
+    "normalize //",
+    normalize_path('A//B'),
+    'A/B'
+    )
+  ensure_strequals(
+    "normalize // in any position",
+    normalize_path('//A//B//'),
+    '/A/B/'
+    )
+end)
+
+test:case "normalize_empty_part_of_path" (function()
+  ensure_strequals(
+    "normalize /./",
+    normalize_path('A/./B'),
+    'A/B'
+    )
+  ensure_strequals(
+    "normalize /foo/..",
+    normalize_path('A/foo/../B'),
+    'A/B'
+    )
+end)
+
+--TODO: https://github.com/lua-aplicado/lua-aplicado/issues/8
+test:BROKEN "normalize_empty_part_of_path_in_any_position" (function()
+  ensure_strequals(
+    "must remove './' in the beginning of a path too",
+    normalize_path('./A/B'),
+    'A/B'
     )
 end)
 
