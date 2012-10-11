@@ -4,6 +4,7 @@
 -- Copyright (c) Lua-Aplicado authors (see file `COPYRIGHT` for the license)
 --------------------------------------------------------------------------------
 
+local package = package
 local loadfile, loadstring = loadfile, loadstring
 local table_sort = table.sort
 local debug_traceback = debug.traceback
@@ -35,6 +36,9 @@ local split_by_char,
         'split_by_char',
         'fill_curly_placeholders'
       }
+
+local PATH_SEPARATOR = package.config:sub(1,1)
+local IS_WINDOWS = (PATH_SEPARATOR == '\\')
 
 --------------------------------------------------------------------------------
 
@@ -336,6 +340,66 @@ local get_extension = function(path)
   end
 end
 
+-- Inspired by path.join from MIT-licensed Penlight
+-- https://github.com/stevedonovan/Penlight
+--- Return the path resulting from combining the individual paths.
+-- @param path1 A file path
+-- @param path2 A file path
+-- @param ... more file paths
+local function join_path(path1, path2, ...)
+  arguments(
+      "string", path1,
+      "string", path2
+    )
+
+  if select('#', ...) > 0 then
+    return join_path(join_path(path1, path2), ...)
+  end
+
+  if
+    path1:sub(#path1, #path1) ~= PATH_SEPARATOR and
+    path2:sub(1, 1) ~= PATH_SEPARATOR
+  then
+      path1 = path1 .. PATH_SEPARATOR
+  end
+
+  return path1 .. path2
+end
+
+-- Inspired by path.normpath from MIT-licensed Penlight
+-- https://github.com/stevedonovan/Penlight
+--  A//B, A/./B and A/foo/../B all become A/B.
+-- @param path a file path
+local function normalize_path(path)
+  arguments(
+      "string", path
+    )
+
+  if IS_WINDOWS then
+    if path:match '^\\\\' then -- UNC
+        return '\\\\' .. normalize_path(path:sub(3))
+    end
+    path = path:gsub('/','\\')
+  end
+
+  local k
+  -- /./ -> / ; // -> /
+  local pattern = PATH_SEPARATOR .. "+%.?" .. PATH_SEPARATOR
+  repeat
+    path, k = path:gsub(pattern, PATH_SEPARATOR)
+  until k == 0
+
+  -- A/../ -> (empty
+  pattern = "[^" .. PATH_SEPARATOR .. "]+" .. PATH_SEPARATOR .. "%.%."
+    .. PATH_SEPARATOR .. "?"
+  repeat
+      path, k = path:gsub(pattern,'')
+  until k == 0
+
+  if path == '' then path = '.' end
+  return path
+end
+
 -------------------------------------------------------------------------------
 
 return
@@ -353,4 +417,6 @@ return
   splitpath = splitpath;
   get_filename_from_path = get_filename_from_path;
   get_extension = get_extension;
+  join_path = join_path;
+  normalize_path = normalize_path;
 }
