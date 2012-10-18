@@ -4,10 +4,6 @@
 -- Copyright (c) Lua-Aplicado authors (see file `COPYRIGHT` for the license)
 --------------------------------------------------------------------------------
 
-local make_suite = ...
-
---------------------------------------------------------------------------------
-
 local socket = require 'socket'
 
 --------------------------------------------------------------------------------
@@ -70,7 +66,7 @@ local find_all_files,
 
 --------------------------------------------------------------------------------
 
-local test = make_suite("filesystem", exports)
+local test = (...)("filesystem", exports)
 
 --------------------------------------------------------------------------------
 
@@ -98,6 +94,7 @@ test:group 'do_atomic_op_with_file'
 --------------------------------------------------------------------------------
 
 -- TODO: broken, due do_with_server dependency
+-- https://github.com/lua-aplicado/lua-aplicado/issues/11
 test:BROKEN "update-file-from-2-threads" (function()
   local TEST_FILE_DO_ATOMIC = register_temp_file("./data/test_do_atomic")
 
@@ -247,7 +244,4 @@ test:UNTESTED "splitpath"
 --------------------------------------------------------------------------------
 
 -- TODO: Add more tests on do_atomic_op_with_file()
-
---------------------------------------------------------------------------------
-
-assert(test:run())
+-- https://github.com/lua-aplicado/lua-aplicado/issues/10

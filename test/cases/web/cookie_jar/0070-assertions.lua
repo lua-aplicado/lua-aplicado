@@ -4,8 +4,6 @@
 -- Copyright (c) lua-nucleo authors (see file `COPYRIGHT` for the license)
 --------------------------------------------------------------------------------
 
-local make_suite = ...
-
 local ensure,
       ensure_equals,
       ensure_strequals,
@@ -27,7 +25,7 @@ local make_cookie_jar,
 
 --------------------------------------------------------------------------------
 
-local test = make_suite('assertions', exports)
+local test = (...)('assertions', exports)
 
 --------------------------------------------------------------------------------
 
@@ -88,7 +86,3 @@ test 'assertion-helpers' (function()
   ensure_equals('cookie "bar" is same', c:is_same('bar'), true)
 
 end)
-
---------------------------------------------------------------------------------
-
-assert(test:run())

@@ -4,10 +4,6 @@
 -- Copyright (c) Lua-Aplicado authors (see file `COPYRIGHT` for the license)
 --------------------------------------------------------------------------------
 
-local make_suite = ...
-
---------------------------------------------------------------------------------
-
 local ensure_strequals
       = import 'lua-nucleo/ensure.lua'
       {
@@ -23,7 +19,7 @@ local create_email,
 
 --------------------------------------------------------------------------------
 
-local test = make_suite("send_email", exports)
+local test = (...)("send_email", exports)
 
 --------------------------------------------------------------------------------
 
@@ -97,7 +93,3 @@ test "create_email_bcc_table" (function()
 end)
 
 test:UNTESTED "send_email"
-
---------------------------------------------------------------------------------
-
-assert(test:run())

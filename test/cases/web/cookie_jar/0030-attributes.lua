@@ -4,8 +4,6 @@
 -- Copyright (c) lua-nucleo authors (see file `COPYRIGHT` for the license)
 --------------------------------------------------------------------------------
 
-local make_suite = ...
-
 local ensure,
       ensure_equals,
       ensure_strequals,
@@ -27,7 +25,7 @@ local make_cookie_jar,
 
 --------------------------------------------------------------------------------
 
-local test = make_suite('attributes', exports)
+local test = (...)('attributes', exports)
 
 -- assume local timezone is GMT+04
 local GMT_OFFSET = 4
@@ -101,7 +99,3 @@ test 'attributes' (function()
     )
 
 end)
-
---------------------------------------------------------------------------------
-
-assert(test:run())

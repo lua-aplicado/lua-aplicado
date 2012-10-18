@@ -4,8 +4,6 @@
 -- Copyright (c) lua-nucleo authors (see file `COPYRIGHT` for the license)
 --------------------------------------------------------------------------------
 
-local make_suite = ...
-
 local ensure,
       ensure_equals,
       ensure_strequals,
@@ -33,7 +31,7 @@ local make_cookie_jar,
 
 --------------------------------------------------------------------------------
 
-local test = make_suite('factory', exports)
+local test = (...)('factory', exports)
 
 --------------------------------------------------------------------------------
 
@@ -73,7 +71,3 @@ test 'factory-parameters' (function()
   ensure_equals('custom time function surely works', c.time_fn_(), t)
 
 end)
-
---------------------------------------------------------------------------------
-
-assert(test:run())

@@ -4,8 +4,6 @@
 -- Copyright (c) lua-nucleo authors (see file `COPYRIGHT` for the license)
 --------------------------------------------------------------------------------
 
-local make_suite = ...
-
 local ensure,
       ensure_equals,
       ensure_strequals,
@@ -27,7 +25,7 @@ local make_cookie_jar,
 
 --------------------------------------------------------------------------------
 
-local test = make_suite('path', exports)
+local test = (...)('path', exports)
 
 -- HTTP parameters
 local HOST = 'example.com'
@@ -105,7 +103,3 @@ test 'path' (function()
     )
 
 end)
-
---------------------------------------------------------------------------------
-
-assert(test:run())

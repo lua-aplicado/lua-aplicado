@@ -4,10 +4,6 @@
 -- Copyright (c) Lua-Aplicado authors (see file `COPYRIGHT` for the license)
 --------------------------------------------------------------------------------
 
-local make_suite = ...
-
---------------------------------------------------------------------------------
-
 local pairs
     = pairs
 
@@ -54,7 +50,7 @@ local ensure,
         'ensure_fails_with_substring'
       }
 
-local test = make_suite("shell", exports)
+local test = (...)("shell", exports)
 
 --------------------------------------------------------------------------------
 
@@ -400,7 +396,3 @@ test:UNTESTED "shell_write_async_no_subst"
 test:UNTESTED "shell_write_no_subst"
 -- shell_exec_no_subst is covered by shell_exec
 test:UNTESTED "shell_exec_no_subst"
-
---------------------------------------------------------------------------------
-
-test:run()

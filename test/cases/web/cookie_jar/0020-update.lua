@@ -4,8 +4,6 @@
 -- Copyright (c) lua-nucleo authors (see file `COPYRIGHT` for the license)
 --------------------------------------------------------------------------------
 
-local make_suite = ...
-
 local ensure,
       ensure_equals,
       ensure_strequals,
@@ -27,7 +25,7 @@ local make_cookie_jar,
 
 --------------------------------------------------------------------------------
 
-local test = make_suite('update', exports)
+local test = (...)('update', exports)
 
 --------------------------------------------------------------------------------
 
@@ -76,7 +74,3 @@ test 'update-composite-set-cookie' (function()
     )
 
 end)
-
---------------------------------------------------------------------------------
-
-assert(test:run())

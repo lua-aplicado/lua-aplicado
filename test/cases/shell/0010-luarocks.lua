@@ -4,10 +4,6 @@
 -- Copyright (c) Lua-Aplicado authors (see file `COPYRIGHT` for the license)
 --------------------------------------------------------------------------------
 
-local make_suite = ...
-
---------------------------------------------------------------------------------
-
 local pairs
     = pairs
 
@@ -38,7 +34,7 @@ local starts_with
         'starts_with'
       }
 
-local test = make_suite("luarocks", exports)
+local test = (...)("luarocks", exports)
 
 --------------------------------------------------------------------------------
 
@@ -85,7 +81,3 @@ test:UNTESTED "luarocks_install_from"
 test:UNTESTED "luarocks_load_rockspec"
 test:UNTESTED "luarocks_list_rockspec_files"
 test:UNTESTED "luarocks_parse_installed_rocks"
-
---------------------------------------------------------------------------------
-
-test:run()
