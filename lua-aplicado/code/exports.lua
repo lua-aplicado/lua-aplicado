@@ -43,6 +43,7 @@ return
   git_remote_rm = { "lua-aplicado/shell/git.lua" };
   git_update_index = { "lua-aplicado/shell/git.lua" };
   is_directory = { "lua-aplicado/filesystem.lua" };
+  join_path = { "lua-aplicado/filesystem.lua" };
   load_all_files = { "lua-aplicado/filesystem.lua" };
   load_all_files_with_curly_placeholders = { "lua-aplicado/filesystem.lua" };
   luarocks_admin_exec_dir = { "lua-aplicado/shell/luarocks.lua" };
@@ -65,6 +66,7 @@ return
   luarocks_show_rock_dir = { "lua-aplicado/shell/luarocks.lua" };
   make_chunk_inspector = { "lua-aplicado/chunk_inspector.lua" };
   make_cookie_jar = { "lua-aplicado/web/cookie_jar.lua" };
+  normalize_path = { "lua-aplicado/filesystem.lua" };
   random_seed_from_string = { "lua-aplicado/random.lua" };
   read_file = { "lua-aplicado/filesystem.lua" };
   remote_luarocks_ensure_rock_not_installed_forced = { "lua-aplicado/shell/remote_luarocks.lua" };
