@@ -75,6 +75,7 @@ return
   remote_luarocks_remove_forced = { "lua-aplicado/shell/remote_luarocks.lua" };
   remove_file = { "lua-aplicado/shell/filesystem.lua" };
   remove_recursively = { "lua-aplicado/shell/filesystem.lua" };
+  rm_tree = { "lua-aplicado/filesystem.lua" };
   running_under_luajit = { "lua-aplicado/luajit2.lua" };
   send_email = { "lua-aplicado/shell/send_email.lua" };
   shell_escape = { "lua-aplicado/shell.lua" };
