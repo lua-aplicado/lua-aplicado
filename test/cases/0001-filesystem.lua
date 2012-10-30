@@ -5,6 +5,9 @@
 --------------------------------------------------------------------------------
 
 local socket = require 'socket'
+require 'posix'
+local posix_getpid, posix_strftime, posix_gmtime =
+      posix.getpid, posix.strftime, posix.gmtime
 
 --------------------------------------------------------------------------------
 
@@ -50,6 +53,8 @@ local find_all_files,
       do_atomic_op_with_file,
       join_path,
       normalize_path,
+      rm_tree,
+      does_file_exist,
       exports
       = import 'lua-aplicado/filesystem.lua'
       {
@@ -60,7 +65,9 @@ local find_all_files,
         'create_path_to_file',
         'do_atomic_op_with_file',
         'join_path',
-        'normalize_path'
+        'normalize_path',
+        'rm_tree',
+        'does_file_exist'
       }
 
 
@@ -85,6 +92,16 @@ do
       os.remove(files_to_be_removed[i])
     end
   end)
+end
+
+-- Helper: Creates list of empty temporary files in temporary directory.
+-- Returns path to temporary directory
+local function create_tmp_files(filenames_table, tmp_dir)
+  for _, filename in pairs(filenames_table) do
+    local test_file_name = register_temp_file(join_path(tmp_dir, filename))
+    create_path_to_file(test_file_name)
+    write_file(test_file_name, "")
+  end
 end
 
 --------------------------------------------------------------------------------
@@ -223,6 +240,65 @@ test:BROKEN "normalize_empty_part_of_path_in_any_position" (function()
     "must remove './' in the beginning of a path too",
     normalize_path('./A/B'),
     'A/B'
+    )
+end)
+
+--------------------------------------------------------------------------------
+
+-- NOTE: Tests for rm_tree doesn't use ":with(tmpdir())" decorator,
+--       because it uses rm_tree itself
+test:tests_for "rm_tree"
+
+local TEST_DIR = join_path(
+    "/tmp",
+    "lua-aplicado-0001-" .. posix_getpid("pid") .. "-" .. posix_strftime('%F-%T', posix_gmtime())
+  )
+
+test:case "rm_tree_without_params" (function()
+  ensure_fails_with_substring(
+      "rm_tree must fail if is called witout params",
+      (function()
+          rm_tree()
+      end),
+      "argument #1: expected `string'"
+    )
+end)
+
+test:case "rm_tree_single_empty_dir" (function()
+  -- note, that only path is created in this test-case
+  create_path_to_file(join_path(TEST_DIR, "test_file"))
+
+  rm_tree(TEST_DIR)
+  ensure(
+      "rm_tree deletes single empty directory",
+      not does_file_exist(TEST_DIR)
+    )
+end)
+
+test:case "rm_tree_single_dir_with_files" (function()
+  create_tmp_files({ "test_file_1", "test_file_2" }, TEST_DIR)
+
+  rm_tree(TEST_DIR)
+  ensure(
+      "rm_tree deletes single directory with files",
+      not does_file_exist(TEST_DIR)
+    )
+end)
+
+test:case "rm_tree_full_test" (function()
+  local tmp_files_names =
+  {
+    "test_file_1";
+    "1/test_file_1_1";
+    "1/test_file_1_2";
+    "1/1/test_file_1_1_1";
+  }
+  create_tmp_files(tmp_files_names, TEST_DIR)
+
+  rm_tree(TEST_DIR)
+  ensure(
+      "rm_tree full test",
+      not does_file_exist(TEST_DIR)
     )
 end)
 
