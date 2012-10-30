@@ -4,10 +4,14 @@
 -- Copyright (c) Lua-Aplicado authors (see file `COPYRIGHT` for the license)
 --------------------------------------------------------------------------------
 
+require 'posix'
+
 local package = package
 local loadfile, loadstring = loadfile, loadstring
 local table_sort = table.sort
 local debug_traceback = debug.traceback
+local posix_unlink, posix_rmdir, posix_files =
+      posix.unlink, posix.rmdir, posix.files
 
 --------------------------------------------------------------------------------
 
@@ -37,8 +41,16 @@ local split_by_char,
         'fill_curly_placeholders'
       }
 
+local make_checker
+      = import 'lua-nucleo/checker.lua'
+      {
+        'make_checker'
+      }
+
 local PATH_SEPARATOR = package.config:sub(1,1)
 local IS_WINDOWS = (PATH_SEPARATOR == '\\')
+local CURRENT_DIR = "."
+local PARENT_DIR = ".."
 
 --------------------------------------------------------------------------------
 
@@ -400,6 +412,39 @@ local function normalize_path(path)
   return path
 end
 
+--- Removes a whole directory tree. Should work like rm -fr.
+-- Warning: the implementation is not atomic.
+-- Atomicity should be guaranteed by external means, if needed.
+-- @param path_to_dir A directory path
+local function rm_tree(path_to_dir)
+  arguments(
+      "string", path_to_dir
+    )
+
+  local checker = make_checker()
+
+  if not is_directory(path_to_dir) then
+    checker:ensure("unlink file", posix_unlink(path_to_dir))
+    return checker:result()
+  end
+
+  for entry_name in posix_files(path_to_dir) do
+    -- skip "." and ".." entries
+    if entry_name ~= CURRENT_DIR and entry_name ~= PARENT_DIR then
+      local entry_full_path = normalize_path(join_path(path_to_dir, entry_name))
+      if is_directory(entry_full_path) then
+        checker:ensure("remove tree", rm_tree(entry_full_path)) -- remove directory recursively
+      else
+        checker:ensure("unlink file", posix_unlink(entry_full_path)) -- remove files
+      end
+    end
+  end
+  --after all entries in the directory was deleted, delete the directory
+  checker:ensure("remove empty dir", posix_rmdir(path_to_dir))
+
+  return checker:result()
+end
+
 -------------------------------------------------------------------------------
 
 return
@@ -419,4 +464,5 @@ return
   get_extension = get_extension;
   join_path = join_path;
   normalize_path = normalize_path;
+  rm_tree = rm_tree;
 }
