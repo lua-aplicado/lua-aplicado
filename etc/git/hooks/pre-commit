@@ -49,8 +49,8 @@ git diff-index --check --cached $against -- || exit_code=1
 #
 while read -r X rights X hash file_status filename; do
 
-  # exclude symlinks
-  [ "${rights}" == "120000" ] && continue
+  # exclude symlinks and empty lines in diff-index output
+  ([ "${rights}" == "120000" ] || [ "${filename}" == "" ]) && continue
 
   # do not allow commiting to /lib/*, if it is a subtree directory
   case "$filename" in
