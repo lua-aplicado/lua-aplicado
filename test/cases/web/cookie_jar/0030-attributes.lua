@@ -99,3 +99,13 @@ test 'attributes' (function()
     )
 
 end)
+
+-- Based on real bug-scenario TZ#2230
+-- Fails if luaposix.strptime is incompatible with os.date()
+test:case 'date_string_parsing' (function()
+  local c = make_cookie_jar()
+  c:update(
+      "foo=1;expires=Mon, 2032-01-01 00:00:00 GMT+00;path= /;domain=." .. HOST,
+      URL
+    )
+end)
