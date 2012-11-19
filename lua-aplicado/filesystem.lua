@@ -10,8 +10,8 @@ local package = package
 local loadfile, loadstring = loadfile, loadstring
 local table_sort = table.sort
 local debug_traceback = debug.traceback
-local posix_unlink, posix_rmdir, posix_files =
-      posix.unlink, posix.rmdir, posix.files
+local posix_unlink, posix_rmdir, posix_files, posix_mkdtemp =
+      posix.unlink, posix.rmdir, posix.files, posix.mkdtemp
 
 --------------------------------------------------------------------------------
 
@@ -51,6 +51,8 @@ local PATH_SEPARATOR = package.config:sub(1,1)
 local IS_WINDOWS = (PATH_SEPARATOR == '\\')
 local CURRENT_DIR = "."
 local PARENT_DIR = ".."
+local DEFAULT_TMP_DIR = "/tmp"
+local DEFAULT_MKTEMP_MASK = "XXXXXX"
 
 --------------------------------------------------------------------------------
 
@@ -445,6 +447,21 @@ local function rm_tree(path_to_dir)
   return checker:result()
 end
 
+--- Convience function for creating temporary directories
+-- @param tmpdir Path to directory for temporary files/directories
+-- @param prefix Prefix used in pathname generation
+-- @return path to created directory or nil
+local create_temporary_directory = function(prefix, tmpdir)
+  tmpdir = tmpdir or os.getenv("TMPDIR") or DEFAULT_TMP_DIR
+
+  arguments(
+      "string", tmpdir,
+      "string", prefix
+    )
+
+  return posix_mkdtemp(join_path(tmpdir, prefix .. DEFAULT_MKTEMP_MASK))
+end
+
 -------------------------------------------------------------------------------
 
 return
@@ -465,4 +482,5 @@ return
   join_path = join_path;
   normalize_path = normalize_path;
   rm_tree = rm_tree;
+  create_temporary_directory = create_temporary_directory;
 }
