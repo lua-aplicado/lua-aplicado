@@ -1,5 +1,6 @@
 --------------------------------------------------------------------------------
--- generated exports map for lua-aplicado/
+--- Generated exports map for lua-aplicado/
+-- @module lua-aplicado.code.exports
 -- This file is a part of lua-aplicado library
 -- See file `COPYRIGHT` for the license and copyright information
 --------------------------------------------------------------------------------
@@ -10,16 +11,24 @@
 return
 {
   LOM_ATTRS = { "lua-aplicado/expat.lua" };
+  call = { "lua-aplicado/error.lua" };
+  common_init_logging_to_file = { "lua-aplicado/log.lua" };
   copy_file = { "lua-aplicado/shell/filesystem.lua" };
   copy_file_to_dir = { "lua-aplicado/shell/filesystem.lua" };
   copy_file_with_flag = { "lua-aplicado/shell/filesystem.lua" };
+  create_common_logging_system = { "lua-aplicado/log.lua" };
   create_email = { "lua-aplicado/shell/send_email.lua" };
+  create_error_object = { "lua-aplicado/error.lua" };
   create_path_to_file = { "lua-aplicado/filesystem.lua" };
   create_symlink_from_to = { "lua-aplicado/shell/filesystem.lua" };
   csv_convert_to_table = { "lua-aplicado/csv.lua" };
   do_atomic_op_with_file = { "lua-aplicado/filesystem.lua" };
   does_file_exist = { "lua-aplicado/filesystem.lua" };
+  error_handler_for_call = { "lua-aplicado/error.lua" };
+  fail = { "lua-aplicado/error.lua" };
   find_all_files = { "lua-aplicado/filesystem.lua" };
+  get_common_logging_system = { "lua-aplicado/log.lua" };
+  get_current_logsystem_date_microsecond = { "lua-aplicado/log.lua" };
   get_extension = { "lua-aplicado/filesystem.lua" };
   get_filename_from_path = { "lua-aplicado/filesystem.lua" };
   git_add_directory = { "lua-aplicado/shell/git.lua" };
@@ -42,7 +51,9 @@ return
   git_remote_add = { "lua-aplicado/shell/git.lua" };
   git_remote_rm = { "lua-aplicado/shell/git.lua" };
   git_update_index = { "lua-aplicado/shell/git.lua" };
+  is_common_logging_system_initialized = { "lua-aplicado/log.lua" };
   is_directory = { "lua-aplicado/filesystem.lua" };
+  is_error_object = { "lua-aplicado/error.lua" };
   join_path = { "lua-aplicado/filesystem.lua" };
   load_all_files = { "lua-aplicado/filesystem.lua" };
   load_all_files_with_curly_placeholders = { "lua-aplicado/filesystem.lua" };
@@ -66,6 +77,7 @@ return
   luarocks_show_rock_dir = { "lua-aplicado/shell/luarocks.lua" };
   make_chunk_inspector = { "lua-aplicado/chunk_inspector.lua" };
   make_cookie_jar = { "lua-aplicado/web/cookie_jar.lua" };
+  make_loggers = { "lua-aplicado/log.lua" };
   normalize_path = { "lua-aplicado/filesystem.lua" };
   random_seed_from_string = { "lua-aplicado/random.lua" };
   read_file = { "lua-aplicado/filesystem.lua" };
@@ -75,6 +87,7 @@ return
   remote_luarocks_remove_forced = { "lua-aplicado/shell/remote_luarocks.lua" };
   remove_file = { "lua-aplicado/shell/filesystem.lua" };
   remove_recursively = { "lua-aplicado/shell/filesystem.lua" };
+  rethrow = { "lua-aplicado/error.lua" };
   rm_tree = { "lua-aplicado/filesystem.lua" };
   running_under_luajit = { "lua-aplicado/luajit2.lua" };
   send_email = { "lua-aplicado/shell/send_email.lua" };
@@ -96,7 +109,10 @@ return
   shell_write_async_no_subst = { "lua-aplicado/shell.lua" };
   shell_write_no_subst = { "lua-aplicado/shell.lua" };
   splitpath = { "lua-aplicado/filesystem.lua" };
+  try = { "lua-aplicado/error.lua" };
   update_file = { "lua-aplicado/filesystem.lua" };
   write_file = { "lua-aplicado/filesystem.lua" };
+  xcall = { "lua-aplicado/error.lua" };
+  xfinally = { "lua-aplicado/error.lua" };
   xml_convert_lom = { "lua-aplicado/expat.lua" };
 }
