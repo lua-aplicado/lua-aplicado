@@ -41,13 +41,11 @@ local LOG_LEVEL,
 
 --------------------------------------------------------------------------------
 
-local get_current_logsystem_date_microsecond
-do
-  get_current_logsystem_date_microsecond = function(time)
-    time = time or socket.gettime()
-    local fractional = time % 1
-    return format_logsystem_date(time)..("%.6f"):format(fractional):sub(2, -1)
-  end
+local get_current_logsystem_date_microsecond = function(time)
+  time = time or socket.gettime()
+  return format_logsystem_date(time) .. ("%.6f")
+    :format(time % 1)
+    :sub(2, -1)
 end
 
 local COMMON_LOGGERS_INFO = -- Order is important!
