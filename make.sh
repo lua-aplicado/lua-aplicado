@@ -13,7 +13,12 @@ sudo luarocks remove --force lua-aplicado || true
 echo "----> Making rocks"
 sudo luarocks make rockspec/lua-aplicado-scm-1.rockspec
 
-echo "----> Restarting multiwatch and LJ2"
-sudo killall multiwatch || true ; sudo killall luajit2 || true
+case "$1" in
+  --no-restart) ;; # Do nothing
+  *)
+    echo "----> Restarting multiwatch and LJ2"
+    sudo killall multiwatch || true ; sudo killall luajit2 || true
+  ;;
+esac
 
 echo "----> OK"
