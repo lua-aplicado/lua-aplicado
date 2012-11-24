@@ -21,6 +21,7 @@ return
   create_error_object = { "lua-aplicado/error.lua" };
   create_path_to_file = { "lua-aplicado/filesystem.lua" };
   create_symlink_from_to = { "lua-aplicado/shell/filesystem.lua" };
+  create_temporary_directory = { "lua-aplicado/filesystem.lua" };
   csv_convert_to_table = { "lua-aplicado/csv.lua" };
   do_atomic_op_with_file = { "lua-aplicado/filesystem.lua" };
   does_file_exist = { "lua-aplicado/filesystem.lua" };
@@ -109,6 +110,7 @@ return
   shell_write_async_no_subst = { "lua-aplicado/shell.lua" };
   shell_write_no_subst = { "lua-aplicado/shell.lua" };
   splitpath = { "lua-aplicado/filesystem.lua" };
+  temporary_directory = { "lua-aplicado/testing/decorators.lua" };
   try = { "lua-aplicado/error.lua" };
   update_file = { "lua-aplicado/filesystem.lua" };
   write_file = { "lua-aplicado/filesystem.lua" };
