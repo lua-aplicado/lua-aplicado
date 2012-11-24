@@ -22,6 +22,7 @@ local arguments,
       }
 
 local ensure,
+      ensure_is,
       ensure_equals,
       ensure_strequals,
       ensure_tequals,
@@ -31,12 +32,19 @@ local ensure,
       = import 'lua-nucleo/ensure.lua'
       {
         'ensure',
+        'ensure_is',
         'ensure_equals',
         'ensure_strequals',
         'ensure_tequals',
         'ensure_error',
         'ensure_aposteriori_probability',
         'ensure_fails_with_substring'
+      }
+
+local starts_with
+      = import 'lua-nucleo/string.lua'
+      {
+        'starts_with'
       }
 
 local assert_is_string
@@ -55,6 +63,8 @@ local find_all_files,
       normalize_path,
       rm_tree,
       does_file_exist,
+      create_temporary_directory,
+      get_filename_from_path,
       exports
       = import 'lua-aplicado/filesystem.lua'
       {
@@ -67,7 +77,9 @@ local find_all_files,
         'join_path',
         'normalize_path',
         'rm_tree',
-        'does_file_exist'
+        'does_file_exist',
+        'create_temporary_directory',
+        'get_filename_from_path'
       }
 
 
@@ -298,6 +310,39 @@ test:case "rm_tree_full_test" (function()
   rm_tree(TEST_DIR)
   ensure(
       "rm_tree full test",
+      not does_file_exist(TEST_DIR)
+    )
+end)
+
+--------------------------------------------------------------------------------
+
+test:tests_for "create_temporary_directory"
+
+test:case "create_temporary_directory_works" (function()
+  local prefix = "test-tmpdir"
+
+  -- prepare sandbox
+  -- TODO: https://github.com/lua-aplicado/lua-aplicado/issues/17
+  --       Write create_path, and avoid this hack with `join_path`
+  create_path_to_file(join_path(TEST_DIR, "dummy"))
+
+  local tmpdir = create_temporary_directory(prefix, TEST_DIR)
+
+  ensure_is("create_temporary_directory returns string", tmpdir, "string")
+  ensure(
+      "create_temporary_directory returns directory",
+      does_file_exist(tmpdir)
+    )
+  ensure(
+      "created directory name starts with required prefix",
+      starts_with(get_filename_from_path(tmpdir), prefix)
+    )
+
+  rm_tree(TEST_DIR)
+
+  -- ensure our temporary dirs was cleaned up
+  ensure(
+      "rm_tree deletes single directory with files",
       not does_file_exist(TEST_DIR)
     )
 end)
