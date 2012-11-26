@@ -111,12 +111,11 @@ end
 
 local try = function(error_id, result, err, ...)
   arguments(
-      "string", error_id,
-      "string", err
+      "string", error_id
     )
 
   if result == nil then
-    fail(error_id, err)
+    fail(error_id, err or "no error message")
   end
 
   return result, err, ...
