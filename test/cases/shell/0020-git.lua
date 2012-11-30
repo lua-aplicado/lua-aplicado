@@ -9,11 +9,17 @@ local pairs
 
 local git_init,
       git_init_bare,
+      git_add_directory,
+      git_commit_with_message,
+      git_clone,
       exports
       = import 'lua-aplicado/shell/git.lua'
       {
         'git_init',
-        'git_init_bare'
+        'git_init_bare',
+        'git_add_directory',
+        'git_commit_with_message',
+        'git_clone'
       }
 
 local ensure,
@@ -43,10 +49,12 @@ local temporary_directory
       }
 
 local read_file,
+      write_file,
       join_path
       = import 'lua-aplicado/filesystem.lua'
       {
         'read_file',
+        'write_file',
         'join_path'
       }
 
@@ -77,6 +85,27 @@ function(env)
       "git HEAD file content must match expected",
       read_file(join_path(env.tmp_dir, "HEAD")),
       "ref: refs/heads/master\n"
+    )
+end)
+
+test:test_for "git_clone"
+  :with(temporary_directory("source_dir", PROJECT_NAME))
+  :with(temporary_directory("destination_dir", PROJECT_NAME)) (
+function(env)
+  local test_filename = "testfile"
+  local test_data = "test data"
+
+  git_init(env.source_dir)
+  write_file(join_path(env.source_dir, test_filename), test_data)
+  git_add_directory(env.source_dir, ".")
+  git_commit_with_message(env.source_dir, "test commit")
+
+  git_clone(env.destination_dir, env.source_dir)
+
+  ensure_equals(
+      "data in testfile must match committed in source directory",
+      read_file(join_path(env.destination_dir, test_filename)),
+      test_data
     )
 end)
 
