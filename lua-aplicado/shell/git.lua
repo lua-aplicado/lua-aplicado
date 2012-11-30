@@ -252,6 +252,14 @@ local git_init_bare = function(path)
   git_init(path, true)
 end
 
+-- TODO: Enhance with more options, approve option list with AG
+-- https://github.com/lua-aplicado/lua-aplicado/issues/13
+local git_clone = function(path, source)
+  assert(git_exec(
+      path, "clone", source, path
+    ) == 0)
+end
+
 --------------------------------------------------------------------------------
 
 return
@@ -278,4 +286,5 @@ return
   git_pull_subtree = git_pull_subtree;
   git_init = git_init;
   git_init_bare = git_init_bare;
+  git_clone = git_clone;
 }
