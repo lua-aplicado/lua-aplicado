@@ -7,9 +7,13 @@
 local pairs
     = pairs
 
-local exports
+local git_init,
+      git_init_bare,
+      exports
       = import 'lua-aplicado/shell/git.lua'
       {
+        'git_init',
+        'git_init_bare'
       }
 
 local ensure,
@@ -32,6 +36,20 @@ local starts_with
         'starts_with'
       }
 
+local temporary_directory
+      = import 'lua-aplicado/testing/decorators.lua'
+      {
+        'temporary_directory'
+      }
+
+local read_file,
+      join_path
+      = import 'lua-aplicado/filesystem.lua'
+      {
+        'read_file',
+        'join_path'
+      }
+
 local test = (...)("git", exports)
 
 local PROJECT_NAME = "lua-aplicado"
@@ -39,6 +57,30 @@ local PROJECT_NAME = "lua-aplicado"
 --------------------------------------------------------------------------------
 -- TODO: cover with tests all shell/git.lua
 -- https://github.com/lua-aplicado/lua-aplicado/issues/18
+
+test:test_for "git_init"
+  :with(temporary_directory("tmp_dir", PROJECT_NAME)) (
+function(env)
+  git_init(env.tmp_dir)
+  ensure_equals(
+      "git HEAD file content must match expected",
+      read_file(join_path(env.tmp_dir, ".git", "HEAD")),
+      "ref: refs/heads/master\n"
+    )
+end)
+
+test:test_for "git_init_bare"
+  :with(temporary_directory("tmp_dir", PROJECT_NAME)) (
+function(env)
+  git_init_bare(env.tmp_dir)
+  ensure_equals(
+      "git HEAD file content must match expected",
+      read_file(join_path(env.tmp_dir, "HEAD")),
+      "ref: refs/heads/master\n"
+    )
+end)
+
+--------------------------------------------------------------------------------
 
 test:UNTESTED "git_format_command"
 test:UNTESTED "git_exec"
