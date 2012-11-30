@@ -240,6 +240,18 @@ local git_pull_subtree = function(path, remote_name, branch)
     ) == 0)
 end
 
+-- TODO: Enhance with more options, approve option list with AG
+-- https://github.com/lua-aplicado/lua-aplicado/issues/12
+local git_init = function(path, bare)
+  assert(git_exec(
+      path, "init", path, bare and "--bare" or nil
+    ) == 0)
+end
+
+local git_init_bare = function(path)
+  git_init(path, true)
+end
+
 --------------------------------------------------------------------------------
 
 return
@@ -264,4 +276,6 @@ return
   git_remote_add = git_remote_add;
   git_init_subtree = git_init_subtree;
   git_pull_subtree = git_pull_subtree;
+  git_init = git_init;
+  git_init_bare = git_init_bare;
 }
