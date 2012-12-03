@@ -102,7 +102,15 @@ return
   {
     { "lua-aplicado/shell/git.lua", w = 0 };
   };
+  git_add_path =
+  {
+    { "lua-aplicado/shell/git.lua", w = 0 };
+  };
   git_are_branches_different =
+  {
+    { "lua-aplicado/shell/git.lua", w = 0 };
+  };
+  git_checkout =
   {
     { "lua-aplicado/shell/git.lua", w = 0 };
   };
@@ -122,11 +130,27 @@ return
   {
     { "lua-aplicado/shell/git.lua", w = 0 };
   };
+  git_create_branch =
+  {
+    { "lua-aplicado/shell/git.lua", w = 0 };
+  };
   git_exec =
   {
     { "lua-aplicado/shell/git.lua", w = 0 };
   };
   git_format_command =
+  {
+    { "lua-aplicado/shell/git.lua", w = 0 };
+  };
+  git_get_branch_list =
+  {
+    { "lua-aplicado/shell/git.lua", w = 0 };
+  };
+  git_get_current_branch_name =
+  {
+    { "lua-aplicado/shell/git.lua", w = 0 };
+  };
+  git_get_list_of_staged_files =
   {
     { "lua-aplicado/shell/git.lua", w = 0 };
   };
