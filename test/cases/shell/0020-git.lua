@@ -84,41 +84,17 @@ local read_file,
         'join_path'
       }
 
+local commit_content,
+      create_repo_with_content
+      = import 'pk-test/testing/git.lua'
+      {
+        'commit_content',
+        'create_repo_with_content'
+      }
+
 local test = (...)("git", git_exports)
 
 local PROJECT_NAME = "lua-aplicado"
-
---------------------------------------------------------------------------------
-
-local commit_content = function(path, files_content, commit_message)
-  arguments(
-      "string", path,
-      "table", files_content,
-      "string", commit_message
-    )
-
-  for filename, file_content in pairs(files_content) do
-    assert(write_file(join_path(path, filename), file_content))
-    git_add_path(path, filename)
-  end
-
-  git_commit_with_message(path, commit_message)
-end
-
-local create_repo_with_content = function(
-    path,
-    files_content,
-    initial_commit_message
-  )
-  arguments(
-      "string", path,
-      "table", files_content,
-      "string", initial_commit_message
-    )
-
-  git_init(path)
-  commit_content(path, files_content, initial_commit_message)
-end
 
 --------------------------------------------------------------------------------
 -- TODO: cover with tests all shell/git.lua
