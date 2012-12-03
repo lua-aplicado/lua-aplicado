@@ -14,6 +14,9 @@ local git_init,
       git_clone,
       git_add_path,
       git_get_list_of_staged_files,
+      git_get_current_branch_name,
+      git_get_branch_list,
+      git_create_branch,
       git_exports
       = import 'lua-aplicado/shell/git.lua'
       {
@@ -23,7 +26,10 @@ local git_init,
         'git_commit_with_message',
         'git_clone',
         'git_add_path',
-        'git_get_list_of_staged_files'
+        'git_get_list_of_staged_files',
+        'git_get_current_branch_name',
+        'git_get_branch_list',
+        'git_create_branch'
       }
 
 local ensure,
@@ -40,6 +46,12 @@ local ensure,
         'ensure_error',
         'ensure_fails_with_substring',
         'ensure_tequals'
+      }
+
+local tifindvalue_nonrecursive
+      = import 'lua-nucleo/table.lua'
+      {
+        'tifindvalue_nonrecursive'
       }
 
 local starts_with
@@ -181,6 +193,78 @@ function(env)
         "testfile1";
         "testfile2";
         "testfile3";
+      }
+    )
+end)
+
+test:test_for "git_get_current_branch_name"
+  :with(temporary_directory("tmp_dir", PROJECT_NAME)) (
+function(env)
+  create_repo_with_content(
+      env.tmp_dir,
+      {
+        ["testfile"] = "test data";
+      },
+      "initial commit"
+    )
+
+  ensure_equals(
+      "branch name must equals master",
+      git_get_current_branch_name(env.tmp_dir),
+      "master"
+    )
+end)
+
+test:test_for "git_create_branch"
+  :with(temporary_directory("tmp_dir", PROJECT_NAME)) (
+function(env)
+  create_repo_with_content(
+      env.tmp_dir,
+      {
+        ["testfile"] = "test data";
+      },
+      "initial commit"
+    )
+
+  git_create_branch(env.tmp_dir, "test_branch", "master", true)
+
+  ensure_equals(
+      "branch name must equals test_branch",
+      git_get_current_branch_name(env.tmp_dir),
+      "test_branch"
+    )
+
+  git_create_branch(env.tmp_dir, "test_branch2")
+  ensure(
+      "branch name test_branch2 must exist in branch list",
+      tifindvalue_nonrecursive(
+          git_get_branch_list(env.tmp_dir),
+          "test_branch2"
+        )
+    )
+end)
+
+test:test_for "git_get_branch_list"
+  :with(temporary_directory("tmp_dir", PROJECT_NAME)) (
+function(env)
+  create_repo_with_content(
+      env.tmp_dir,
+      {
+        ["testfile"] = "test data";
+      },
+      "initial commit"
+    )
+
+  git_create_branch(env.tmp_dir, "test_branch1")
+  git_create_branch(env.tmp_dir, "test_branch2")
+
+  ensure_tequals(
+      "branch list must equals expected",
+      git_get_branch_list(env.tmp_dir),
+      {
+        "master";
+        "test_branch1";
+        "test_branch2";
       }
     )
 end)

@@ -265,6 +265,40 @@ local git_clone = function(path, source)
     ) == 0)
 end
 
+local git_get_current_branch_name = function(path)
+  return trim(git_read(path, "rev-parse", "--abbrev-ref", "HEAD"))
+end
+
+local git_get_branch_list = function(path, pattern)
+  pattern = pattern or "refs/heads"
+
+  local raw_branch_list = git_read(
+      path,
+      "for-each-ref",
+      "refs/heads/",
+      "--format=%(refname:short)"
+    )
+
+  return split_by_char(trim(raw_branch_list), "\n")
+end
+
+local git_create_branch = function(
+    path,
+    branchname,
+    start_point,
+    switch_after_create
+  )
+  if switch_after_create then
+    assert(git_exec(
+        path, "checkout", "-b", branchname, start_point
+      ) == 0)
+  else
+    assert(git_exec(
+        path, "branch", branchname, start_point
+      ) == 0)
+  end
+end
+
 local git_get_list_of_staged_files = function(path)
   local raw_filelist = git_read(
     path,
@@ -302,6 +336,9 @@ return
   git_init = git_init;
   git_init_bare = git_init_bare;
   git_clone = git_clone;
+  git_get_current_branch_name = git_get_current_branch_name;
+  git_get_branch_list = git_get_branch_list;
+  git_create_branch = git_create_branch;
   git_add_path = git_add_path;
   git_get_list_of_staged_files = git_get_list_of_staged_files;
 }
