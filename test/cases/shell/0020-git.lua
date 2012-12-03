@@ -139,10 +139,13 @@ function(env)
   local test_filename = "testfile"
   local test_data = "test data"
 
-  git_init(env.source_dir)
-  write_file(join_path(env.source_dir, test_filename), test_data)
-  git_add_directory(env.source_dir, ".")
-  git_commit_with_message(env.source_dir, "test commit")
+  create_repo_with_content(
+      env.source_dir,
+      {
+        [test_filename] = test_data;
+      },
+      "initial commit"
+    )
 
   git_clone(env.destination_dir, env.source_dir)
 
