@@ -17,6 +17,7 @@ local git_init,
       git_get_current_branch_name,
       git_get_branch_list,
       git_create_branch,
+      git_checkout,
       git_exports
       = import 'lua-aplicado/shell/git.lua'
       {
@@ -29,7 +30,8 @@ local git_init,
         'git_get_list_of_staged_files',
         'git_get_current_branch_name',
         'git_get_branch_list',
-        'git_create_branch'
+        'git_create_branch',
+        'git_checkout'
       }
 
 local ensure,
@@ -266,6 +268,29 @@ function(env)
         "test_branch1";
         "test_branch2";
       }
+    )
+end)
+
+test:test_for "git_checkout"
+  :with(temporary_directory("tmp_dir", PROJECT_NAME)) (
+function(env)
+  create_repo_with_content(
+      env.tmp_dir,
+      {
+        ["testfile"] = "test data";
+      },
+      "initial commit"
+    )
+
+  local test_branchname = "test_branch"
+
+  git_create_branch(env.tmp_dir, test_branchname)
+  git_checkout(env.tmp_dir, test_branchname)
+
+  ensure_equals(
+      "branch name must equals master",
+      git_get_current_branch_name(env.tmp_dir),
+      test_branchname
     )
 end)
 

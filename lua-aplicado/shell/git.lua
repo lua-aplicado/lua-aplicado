@@ -299,6 +299,12 @@ local git_create_branch = function(
   end
 end
 
+local git_checkout = function(path, branchname_or_commit)
+  assert(git_exec(
+      path, "checkout", branchname_or_commit
+    ) == 0)
+end
+
 local git_get_list_of_staged_files = function(path)
   local raw_filelist = git_read(
     path,
@@ -339,6 +345,7 @@ return
   git_get_current_branch_name = git_get_current_branch_name;
   git_get_branch_list = git_get_branch_list;
   git_create_branch = git_create_branch;
+  git_checkout = git_checkout;
   git_add_path = git_add_path;
   git_get_list_of_staged_files = git_get_list_of_staged_files;
 }
