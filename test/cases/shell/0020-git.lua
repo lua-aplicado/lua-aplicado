@@ -12,6 +12,8 @@ local git_init,
       git_add_directory,
       git_commit_with_message,
       git_clone,
+      git_add_path,
+      git_get_list_of_staged_files,
       git_exports
       = import 'lua-aplicado/shell/git.lua'
       {
@@ -19,27 +21,37 @@ local git_init,
         'git_init_bare',
         'git_add_directory',
         'git_commit_with_message',
-        'git_clone'
+        'git_clone',
+        'git_add_path',
+        'git_get_list_of_staged_files'
       }
 
 local ensure,
       ensure_equals,
       ensure_strequals,
       ensure_error,
-      ensure_fails_with_substring
+      ensure_fails_with_substring,
+      ensure_tequals
       = import 'lua-nucleo/ensure.lua'
       {
         'ensure',
         'ensure_equals',
         'ensure_strequals',
         'ensure_error',
-        'ensure_fails_with_substring'
+        'ensure_fails_with_substring',
+        'ensure_tequals'
       }
 
 local starts_with
       = import 'lua-nucleo/string.lua'
       {
         'starts_with'
+      }
+
+local arguments
+      = import 'lua-nucleo/args.lua'
+      {
+        'arguments'
       }
 
 local temporary_directory
@@ -61,6 +73,38 @@ local read_file,
 local test = (...)("git", git_exports)
 
 local PROJECT_NAME = "lua-aplicado"
+
+--------------------------------------------------------------------------------
+
+local commit_content = function(path, files_content, commit_message)
+  arguments(
+      "string", path,
+      "table", files_content,
+      "string", commit_message
+    )
+
+  for filename, file_content in pairs(files_content) do
+    assert(write_file(join_path(path, filename), file_content))
+    git_add_path(path, filename)
+  end
+
+  git_commit_with_message(path, commit_message)
+end
+
+local create_repo_with_content = function(
+    path,
+    files_content,
+    initial_commit_message
+  )
+  arguments(
+      "string", path,
+      "table", files_content,
+      "string", initial_commit_message
+    )
+
+  git_init(path)
+  commit_content(path, files_content, initial_commit_message)
+end
 
 --------------------------------------------------------------------------------
 -- TODO: cover with tests all shell/git.lua
@@ -106,6 +150,35 @@ function(env)
       "data in testfile must match committed in source directory",
       read_file(join_path(env.destination_dir, test_filename)),
       test_data
+    )
+end)
+
+test:tests_for "git_add_path" "git_get_list_of_staged_files"
+test:case "git_add_path_and_git_get_list_of_staged_files"
+  :with(temporary_directory("tmp_dir", PROJECT_NAME)) (
+function(env)
+  create_repo_with_content(
+      env.tmp_dir,
+      {
+        ["testfile1"] = "test data";
+        ["testfile2"] = "test data";
+        ["testfile3"] = "test data";
+      },
+      "initial commit"
+    )
+
+  git_add_path(env.tmp_dir, "testfile1")
+  git_add_path(env.tmp_dir, "testfile2")
+  git_add_path(env.tmp_dir, "testfile3")
+
+  ensure_tequals(
+      "staged filelist must equals expected",
+      git_get_list_of_staged_files(env.tmp_dir),
+      {
+        "testfile1";
+        "testfile2";
+        "testfile3";
+      }
     )
 end)
 

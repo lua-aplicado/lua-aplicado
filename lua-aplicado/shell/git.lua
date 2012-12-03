@@ -27,10 +27,12 @@ local assert_is_table,
         'assert_is_nil'
       }
 
-local split_by_char
+local split_by_char,
+      trim
       = import 'lua-nucleo/string.lua'
       {
-        'split_by_char'
+        'split_by_char',
+        'trim'
       }
 
 local shell_exec,
@@ -107,11 +109,14 @@ local git_is_file_changed_between_revisions = function(
     ) ~= 0 -- TODO: Hack
 end
 
--- TODO: Check that directory is inside git repo
-local git_add_directory = function(path, dir)
+local git_add_path = function(path, path_to_add)
   assert(git_exec(
-      path, "add", dir .. "/"
+      path, "add", path_to_add
     ) == 0)
+end
+
+local git_add_directory = function(path, dir)
+  git_add_path(path, dir .. "/")
 end
 
 local git_commit_with_editable_message = function(path, message)
@@ -260,6 +265,16 @@ local git_clone = function(path, source)
     ) == 0)
 end
 
+local git_get_list_of_staged_files = function(path)
+  local raw_filelist = git_read(
+    path,
+    "ls-files",
+    "--cached"
+  )
+
+  return split_by_char(trim(raw_filelist), "\n")
+end
+
 --------------------------------------------------------------------------------
 
 return
@@ -287,4 +302,6 @@ return
   git_init = git_init;
   git_init_bare = git_init_bare;
   git_clone = git_clone;
+  git_add_path = git_add_path;
+  git_get_list_of_staged_files = git_get_list_of_staged_files;
 }
