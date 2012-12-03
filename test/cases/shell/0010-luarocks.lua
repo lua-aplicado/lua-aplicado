@@ -8,7 +8,7 @@ local pairs
     = pairs
 
 local luarocks_show_rock_dir,
-      exports
+      luarocks_exports
       = import 'lua-aplicado/shell/luarocks.lua'
       {
         'luarocks_show_rock_dir',
@@ -34,7 +34,7 @@ local starts_with
         'starts_with'
       }
 
-local test = (...)("luarocks", exports)
+local test = (...)("luarocks", luarocks_exports)
 
 --------------------------------------------------------------------------------
 

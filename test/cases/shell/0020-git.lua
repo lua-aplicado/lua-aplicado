@@ -12,7 +12,7 @@ local git_init,
       git_add_directory,
       git_commit_with_message,
       git_clone,
-      exports
+      git_exports
       = import 'lua-aplicado/shell/git.lua'
       {
         'git_init',
@@ -58,7 +58,7 @@ local read_file,
         'join_path'
       }
 
-local test = (...)("git", exports)
+local test = (...)("git", git_exports)
 
 local PROJECT_NAME = "lua-aplicado"
 
