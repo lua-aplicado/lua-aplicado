@@ -239,9 +239,26 @@ local git_init_subtree = function(
   end
 end
 
-local git_pull_subtree = function(path, remote_name, branch)
+local git_pull_subtree = function(
+    path,
+    remote_name,
+    branch,
+    relative_path,
+    merge_commit_message
+  )
   assert(git_exec(
-      path, "pull", "-s", "subtree", remote_name, branch
+      path, "fetch", remote_name
+    ) == 0)
+  assert(git_exec(
+      path,
+      "merge",
+      "-s",
+      "recursive",
+      remote_name .. "/" .. branch,
+      "-Xsubtree=" .. relative_path,
+      "-Xtheirs",
+      merge_commit_message and "-m" or nil,
+      merge_commit_message
     ) == 0)
 end
 
