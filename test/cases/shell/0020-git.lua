@@ -18,6 +18,8 @@ local git_init,
       git_get_branch_list,
       git_create_branch,
       git_checkout,
+      git_init_subtree,
+      git_pull_subtree,
       git_exports
       = import 'lua-aplicado/shell/git.lua'
       {
@@ -31,7 +33,9 @@ local git_init,
         'git_get_current_branch_name',
         'git_get_branch_list',
         'git_create_branch',
-        'git_checkout'
+        'git_checkout',
+        'git_init_subtree',
+        'git_pull_subtree'
       }
 
 local ensure,
@@ -76,12 +80,14 @@ local temporary_directory
 
 local read_file,
       write_file,
-      join_path
+      join_path,
+      create_path_to_file
       = import 'lua-aplicado/filesystem.lua'
       {
         'read_file',
         'write_file',
-        'join_path'
+        'join_path',
+        'create_path_to_file'
       }
 
 local commit_content,
@@ -270,6 +276,158 @@ function(env)
     )
 end)
 
+test:test_for "git_pull_subtree"
+  :with(temporary_directory("subproject_dir", PROJECT_NAME))
+  :with(temporary_directory("end_project_dir", PROJECT_NAME))
+  :with(temporary_directory("destination_dir", PROJECT_NAME)) (
+function(env)
+  local subproject_test_filename = "subtestfile"
+  local subproject_test_filename2 = "subtestfile2"
+  local end_project_test_filename = "testfile"
+  local test_data = "test data"
+  local changed_test_data = "changed test data"
+  local subtree_name = "test-subtree"
+  local lib_path = join_path("lib", subtree_name)
+
+  create_repo_with_content(
+      env.subproject_dir,
+      {
+        [subproject_test_filename] = test_data;
+      },
+      "initial commit in subporject"
+    )
+
+  create_repo_with_content(
+      env.end_project_dir,
+      {
+        [end_project_test_filename] = test_data;
+      },
+      "initial commit in end porject"
+    )
+
+  git_clone(env.destination_dir, env.end_project_dir)
+
+  git_init_subtree(
+      env.destination_dir,
+      subtree_name,
+      env.subproject_dir,
+      "master",
+      lib_path,
+      "init subtree"
+    )
+
+  commit_content(
+      env.subproject_dir,
+      {
+        [subproject_test_filename] = changed_test_data;
+      },
+      "changes made"
+    )
+
+  local pull_subtree = function(branch)
+    branch = branch or "master"
+    git_pull_subtree(
+        env.destination_dir,
+        "test-subtree",
+        branch,
+        lib_path,
+        "merge commit message"
+      )
+  end
+
+  -- simple pull subtree check
+
+  pull_subtree()
+
+  ensure_equals(
+      "data in testfile must match committed in subtree directory",
+      read_file(join_path(
+          env.destination_dir,
+          lib_path,
+          subproject_test_filename
+        )),
+      changed_test_data
+    )
+
+  -- new file pull subtree check
+
+  commit_content(
+      env.subproject_dir,
+      {
+        [subproject_test_filename2] = test_data;
+      },
+      "add new file"
+    )
+
+  pull_subtree()
+
+  ensure_equals(
+      "data in testfile must match committed in subtree directory",
+      read_file(join_path(
+          env.destination_dir,
+          lib_path,
+          subproject_test_filename2
+        )),
+      test_data
+    )
+
+  -- merge pull subtree check - in repo first
+
+  local first_branchname = "first_branch"
+  local second_branchname = "second_branch"
+  local first_data = "older data\n"
+  local second_data = "newer data\n"
+
+  git_create_branch(
+      env.subproject_dir,
+      first_branchname,
+      "master",
+      true
+    )
+
+  commit_content(
+      env.subproject_dir,
+      {
+        [subproject_test_filename] = first_data;
+      },
+      "older commit"
+    )
+
+  git_create_branch(
+      env.subproject_dir,
+      second_branchname,
+      "master",
+      true
+    )
+
+  commit_content(
+      env.subproject_dir,
+      {
+        [subproject_test_filename] = second_data;
+      },
+      "newer commit"
+    )
+
+  git_create_branch(
+      env.destination_dir,
+      "first_then_second_test",
+      "master",
+      true
+    )
+  pull_subtree(first_branchname)
+  pull_subtree(second_branchname)
+
+  ensure_equals(
+      "data in testfile must match committed later",
+      read_file(join_path(
+          env.destination_dir,
+          lib_path,
+          subproject_test_filename
+        )),
+      second_data
+    )
+end)
+
 --------------------------------------------------------------------------------
 
 test:UNTESTED "git_format_command"
@@ -291,4 +449,3 @@ test:UNTESTED "git_config_get_remote_url"
 test:UNTESTED "git_remote_rm"
 test:UNTESTED "git_remote_add"
 test:UNTESTED "git_init_subtree"
-test:UNTESTED "git_pull_subtree"
