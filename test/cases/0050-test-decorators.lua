@@ -33,14 +33,16 @@ local ensure,
       ensure_equals,
       ensure_tequals,
       ensure_is,
-      ensure_returns
+      ensure_returns,
+      ensure_has_substring
       = import 'lua-nucleo/ensure.lua'
       {
         'ensure',
         'ensure_equals',
         'ensure_tequals',
         'ensure_is',
-        'ensure_returns'
+        'ensure_returns',
+        'ensure_has_substring'
       }
 
 local write_file,
@@ -54,10 +56,12 @@ local write_file,
       }
 
 local temporary_directory,
+      temporary_package_path,
       decorators_exports
       = import 'lua-aplicado/testing/decorators.lua'
       {
-        'temporary_directory'
+        'temporary_directory',
+        'temporary_package_path'
       }
 
 --------------------------------------------------------------------------------
@@ -123,6 +127,59 @@ test:case "temporary_directory_test_environment" (function(env)
   wrapped(test_env)
   ensure("good_fake_test called", called)
   ensure("test_env still empty after decorated test", tisempty(test_env))
+end)
+
+--------------------------------------------------------------------------------
+
+--TODO: Rewrite tests using check_decorator (#1380)
+test:group "temporary_package_path"
+
+test:case "temporary_package_path_works"
+  :with(temporary_directory('test_tmpdir', "lua_aplicado_0050_")) (function(test_env)
+
+  -- create a test file to import in tmpdir
+  local content = 'return { TEST_CONST = 42 }'
+
+  write_file(join_path(test_env.test_tmpdir, "test_file.lua"), content)
+
+  local called_ok = false
+  local good_fake_test = function()
+    local const = import "test_file.lua" { 'TEST_CONST' }
+    ensure_equals("test_const was imported", const, 42)
+    called_ok = true
+  end
+
+  local decorator = temporary_package_path('test_tmpdir')
+  ensure_is("decorator is function", decorator, "function")
+
+  local wrapped = decorator(good_fake_test)
+  ensure_is("decorated test is function", decorator, "function")
+
+  wrapped(test_env)
+  ensure("good_fake_test was called", called_ok)
+end)
+
+test:case "temporary_package_path_cleanup"
+    :with(temporary_directory('test_tmpdir', "lua_aplicado_0050_")) (function(test_env)
+
+  local called_ok = false
+  local good_fake_test = function()
+    ensure_has_substring("temp package path was added", package.path, test_env.test_tmpdir)
+    called_ok = true
+  end
+
+  local decorator = temporary_package_path('test_tmpdir')
+  ensure_is("decorator is function", decorator, "function")
+
+  local wrapped = decorator(good_fake_test)
+  ensure_is("decorated test is function", decorator, "function")
+
+  wrapped(test_env)
+  ensure("good_fake_test was called", called_ok)
+  ensure(
+      "package path was cleaned",
+      not package.path:find(test_env.test_tmpdir, nil, true)
+    )
 end)
 
 --------------------------------------------------------------------------------
