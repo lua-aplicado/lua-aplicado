@@ -450,6 +450,10 @@ return
   {
     { "lua-aplicado/testing/decorators.lua", w = 0 };
   };
+  temporary_package_path =
+  {
+    { "lua-aplicado/testing/decorators.lua", w = 0 };
+  };
   try =
   {
     { "lua-aplicado/error.lua", w = 0 };
