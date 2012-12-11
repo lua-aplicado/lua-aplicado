@@ -75,9 +75,35 @@ local temporary_directory = function(variable, prefix, tmpdir)
   end
 end
 
+--- Creates test decorator, which adds path into package.path temporary,
+-- restoring original value on cleanup
+-- @param env_key
+-- @return decorator
+local temporary_package_path = function(env_key)
+  arguments(
+      "string", env_key
+    )
+
+  return function(test_function)
+    return function(env)
+      local tmp_pkgdir = env[env_key]
+      local original_path = package.path
+      package.path = join_path(tmp_pkgdir, "?.lua") .. ";" .. package.path
+      test_function(env)
+      return xfinally(
+          test_function,
+          function()
+            package.path = original_path
+          end
+        )
+    end
+  end
+end
+
 --------------------------------------------------------------------------------
 
 return
 {
   temporary_directory = temporary_directory;
+  temporary_package_path = temporary_package_path;
 }
