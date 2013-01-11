@@ -311,7 +311,7 @@ do
   end
 
   shell_write_async = function(text, ...)
-    return shell_read_write(text, shell_format_command(...))
+    return shell_write_impl(text, shell_format_command(...))
   end
 
   shell_write = function(text, ...)
@@ -320,7 +320,7 @@ do
   end
 
   shell_write_async_no_subst = function(text, ...)
-    return shell_read_write(text, shell_format_command_no_subst(...))
+    return shell_write_impl(text, shell_format_command_no_subst(...))
   end
 
   shell_write_no_subst = function(text, ...)
