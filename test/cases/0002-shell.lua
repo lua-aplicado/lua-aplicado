@@ -11,6 +11,8 @@ local shell_read,
       shell_read_no_subst,
       shell_write,
       shell_write_no_subst,
+      shell_write_async,
+      shell_write_async_no_subst,
       shell_exec,
       shell_exec_no_subst,
       shell_escape,
@@ -19,6 +21,7 @@ local shell_read,
       shell_escape_many_no_subst,
       shell_format_command,
       shell_format_command_no_subst,
+      shell_wait,
       exports
       = import 'lua-aplicado/shell.lua'
       {
@@ -26,6 +29,8 @@ local shell_read,
         'shell_read_no_subst',
         'shell_write',
         'shell_write_no_subst',
+        'shell_write_async',
+        'shell_write_async_no_subst',
         'shell_exec',
         'shell_exec_no_subst',
         'shell_escape',
@@ -33,7 +38,8 @@ local shell_read,
         'shell_escape_no_subst',
         'shell_escape_many_no_subst',
         'shell_format_command',
-        'shell_format_command_no_subst'
+        'shell_format_command_no_subst',
+        'shell_wait'
       }
 
 local ensure,
@@ -384,15 +390,36 @@ test:test_for "shell_format_command_no_subst" (function ()
     )
 end)
 
+test:test_for "shell_write_async"
+
+-- Based on real bug scenario: https://redmine-tmp.iphonestudio.ru/issues/1564
+-- shell_write_async functionality mostly covered by shell_write tests
+test:case "async_write_exit_0" (function()
+  local pid = shell_write_async("exit 0\n", "/bin/sh")
+  shell_wait(pid, "/bin/sh")
+end)
+
+test:test_for "shell_write_async_no_subst"
+
+-- Based on real bug scenario: https://redmine-tmp.iphonestudio.ru/issues/1564
+-- shell_write_async_no_subst functionality mostly covered by shell_write tests
+test:case "async_write_no_subst_exit_0" (function()
+  local pid = shell_write_async_no_subst("exit 0\n", "/bin/sh")
+  shell_wait(pid, "/bin/sh")
+end)
+
+test:test_for "shell_write_no_subst"
+
+-- Based on real bug scenario: https://redmine-tmp.iphonestudio.ru/issues/1564
+-- shell_write_no_subst functionality mostly covered by shell_write tests
+test:case "shell_write_no_subst_exit_0" (function()
+  shell_write_no_subst("exit 0\n", "/bin/sh")
+end)
+
 --------------------------------------------------------------------------------
 
 -- shell_wait is covered by tests shell_read and shell_write
 test:UNTESTED "shell_wait"
--- shell_write_async is covered by shell_write
-test:UNTESTED "shell_write_async"
--- shell_write_async_no_subst is covered by shell_write_no_subst
-test:UNTESTED "shell_write_async_no_subst"
--- shell_write_no_subst is covered by shell_write
-test:UNTESTED "shell_write_no_subst"
+
 -- shell_exec_no_subst is covered by shell_exec
 test:UNTESTED "shell_exec_no_subst"
