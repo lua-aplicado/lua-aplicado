@@ -22,6 +22,10 @@ return
   {
     { "lua-aplicado/log.lua", w = 0 };
   };
+  common_send_http_request =
+  {
+    { "lua-aplicado/http.lua", w = 0 };
+  };
   copy_file =
   {
     { "lua-aplicado/shell/filesystem.lua", w = 0 };
@@ -226,6 +230,10 @@ return
   {
     { "lua-aplicado/error.lua", w = 0 };
   };
+  is_http_error_code =
+  {
+    { "lua-aplicado/http.lua", w = 0 };
+  };
   join_path =
   {
     { "lua-aplicado/filesystem.lua", w = 0 };
@@ -373,6 +381,10 @@ return
   send_email =
   {
     { "lua-aplicado/shell/send_email.lua", w = 0 };
+  };
+  send_http_request =
+  {
+    { "lua-aplicado/http.lua", w = 0 };
   };
   shell_escape =
   {
