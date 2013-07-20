@@ -12,7 +12,6 @@ description = {
 dependencies = {
    "lua >= 5.1",
    "lua-nucleo >= 0.0.1",
-   "lua-getdate >= 0.1-1",
    "luafilesystem >= 1.5.0",
    "lbci >= 20090306",
    "luasocket >= 2.0.2",
