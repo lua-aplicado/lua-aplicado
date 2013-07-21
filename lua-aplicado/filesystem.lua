@@ -56,6 +56,13 @@ local DEFAULT_MKTEMP_MASK = "XXXXXX"
 
 --------------------------------------------------------------------------------
 
+--- Return true if file or directory exists and false otherwise
+-- @param filename Path to file or directory
+-- @return true or false
+local does_file_exist = function(filename)
+  return not not posix.stat(filename)
+end
+
 local function find_all_files(path, regexp, dest, mode)
   dest = dest or {}
   mode = mode or false
@@ -124,8 +131,18 @@ local read_file = function(filename)
   return data
 end
 
+--- Update file's content
+-- Create file if it doesn't exist
 -- WARNING: Not atomic.
--- Returns "skipped" if data was not changed
+-- @param out_filename File to update
+-- @param new_data New content of the file
+-- @param force If true, the new content is always written to the file.
+--    If false and the previous content of the file equals to the new content,
+--    function does nothing and returns "skipped". If false and the previous
+--    content differs from the new content, function does nothing and returns
+--    nil and complain message.
+-- @return true if file was updated; "skipped" or nil otherwise (see @param
+--    force)
 local update_file = function(out_filename, new_data, force)
   arguments(
       "string", out_filename,
@@ -134,7 +151,7 @@ local update_file = function(out_filename, new_data, force)
     )
 
   local skip = false
-  if lfs.attributes(out_filename, "mode") then
+  if does_file_exist(out_filename) then
     local old_data, err = read_file(out_filename)
     if not old_data then
       return nil, err
@@ -162,6 +179,13 @@ end
 
 --------------------------------------------------------------------------------
 
+--- Create all missing subdirectories met in filename
+-- For example create_path_to_file("A/B/C/my_file") will create directories
+-- A/, A/B/ and A/B/C/. File "my_file" itself is not created. If directories
+-- already exist, function does nothing.
+-- @param filename Path to file
+-- @return true if all directories are successfully created. Otherwise
+--    function returns two values: nil and error message
 local create_path_to_file = function(filename)
   arguments(
       "string", filename
@@ -171,8 +195,8 @@ local create_path_to_file = function(filename)
   local dirs = split_by_char(filename, "/")
   for i = 1, #dirs - 1 do
     path = path and (path .. "/" .. dirs[i]) or (dirs[i])
-    if path ~= "" and not lfs.attributes(path) then
-      local res, err = lfs.mkdir(path)
+    if path ~= "" and not does_file_exist(path) then
+      local res, err = posix.mkdir(path)
       if not res then
         return nil, "failed to create directory `" .. path .. "': " .. err
       end
@@ -206,7 +230,6 @@ local do_atomic_op_with_file = function(filename, action, ...)
     return msg
   end
 
-  -- TODO: Do xpcall() instead of pcall()?
   local status
   status, res, err = xpcall(action(file, ...), err_handler)
   if not status or not res then
@@ -303,16 +326,12 @@ local load_all_files_with_curly_placeholders = function(
 end
 
 local is_directory = function(path)
-  local mode, err = lfs.attributes(path, 'mode')
-  if not mode then
+  local pathtype, err = posix.stat(path, 'type')
+  if not pathtype then
     return nil, err
   end
 
-  return (mode == "directory")
-end
-
-local does_file_exist = function(filename)
-  return not not lfs.attributes(filename)
+  return (pathtype == "directory")
 end
 
 -- From penlight (modified)
