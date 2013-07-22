@@ -76,14 +76,10 @@ local function find_all_files(path, regexp, dest, mode)
 
       if not attr then
         error("bad file attributes: " .. filepath)
-        return nil, "bad file attributes: " .. filepath
       end
 
       if attr.mode == "directory" then
-        local res, err = find_all_files(filepath, regexp, dest)
-        if not res then
-          return res, err
-        end
+        find_all_files(filepath, regexp, dest)
       elseif not mode or attr.mode == mode then
         if filename:find(regexp) then
           dest[#dest + 1] = filepath
