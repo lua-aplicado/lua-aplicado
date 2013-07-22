@@ -63,27 +63,52 @@ local does_file_exist = function(filename)
   return not not posix.stat(filename)
 end
 
+--- Find all files recursively in path
+-- @param path Path to directory to be recursively searched
+-- @param regexp If name of a file matches against this regexp, it is included
+--    in result. If doesn't match, it's filtered out. To get all files use
+--    find_all_files(path, "")
+-- @param dest (optional) (for internal use)
+-- @param mode (optional) Enables additional filtering for found files.
+--    May be one of:
+--      "regular"             -- To find usual files
+--      "link"
+--      "character device"
+--      "block device"
+--      "fifo"
+--      "socket"
+--      "?"
+-- @return Array of found file names
 local function find_all_files(path, regexp, dest, mode)
+  arguments(
+      "string", path,
+      "string", regexp
+    )
+  optional_arguments(
+      "table", dest,
+      "string", mode
+    )
+
   dest = dest or {}
-  mode = mode or false
 
   assert(mode ~= "directory")
 
-  for filename in lfs.dir(path) do
+  local files = assert(posix.dir(path))
+  for i = 1, #files do
+    local filename = files[i]
     if filename ~= "." and filename ~= ".." then
       local filepath = path .. "/" .. filename
-      local attr = lfs.attributes(filepath)
+      local filetype, err = posix.stat(filepath, 'type')
 
-      if not attr then
-        error("bad file attributes: " .. filepath)
+      if not filetype then
+        error("bad file stat: " .. filepath .. "; " .. tostring(err))
       end
 
-      if attr.mode == "directory" then
+      if filetype == "directory" then
         find_all_files(filepath, regexp, dest)
-      elseif not mode or attr.mode == mode then
+      elseif not mode or filetype == mode then
         if filename:find(regexp) then
           dest[#dest + 1] = filepath
-          -- print("found", filepath)
         end
       end
     end
