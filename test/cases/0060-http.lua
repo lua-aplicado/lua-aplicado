@@ -28,6 +28,8 @@ local make_wsapi_tcp_server_loop
         'make_wsapi_tcp_server_loop'
       }
 
+-- TODO: Change pk-engine/test to pk-test after publishing of pk-test
+-- https://github.com/lua-aplicado/lua-aplicado/issues/23
 local do_with_server
       = import 'pk-engine/test/server.lua'
       {
@@ -35,11 +37,13 @@ local do_with_server
       }
 
 local make_loggers
-      = import 'pk-core/log.lua'
+      = import 'lua-aplicado/log.lua'
       {
         'make_loggers'
       }
 
+-- TODO: Change pk-engine/test to pk-test after publishing of pk-test
+-- https://github.com/lua-aplicado/lua-aplicado/issues/23
 local wait_for_server_start
       = import 'pk-engine/test/client.lua'
       {
@@ -62,7 +66,7 @@ require 'wsapi.response'
 
 --------------------------------------------------------------------------------
 
-local log, dbg, spam, log_error = make_loggers("0150-http", "L15")
+local log, dbg, spam, log_error = make_loggers("0060-http", "T0060")
 
 --------------------------------------------------------------------------------
 
