@@ -50,7 +50,7 @@ local common_send_http_request,
       send_http_request,
       is_http_error_code,
       exports
-      = import 'pk-engine/http.lua'
+      = import 'lua-aplicado/http.lua'
       {
         'common_send_http_request',
         'send_http_request',
