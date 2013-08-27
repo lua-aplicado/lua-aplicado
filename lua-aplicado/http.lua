@@ -222,4 +222,3 @@ return
   common_send_http_request = common_send_http_request;
   send_http_request= send_http_request;
 }
-
