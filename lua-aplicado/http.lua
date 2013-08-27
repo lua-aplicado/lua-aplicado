@@ -4,9 +4,10 @@
 -- Copyright (c) Lua-Aplicado authors (see file `COPYRIGHT` for the license)
 --------------------------------------------------------------------------------
 
-local log, dbg, spam, log_error = import 'lua-aplicado/log.lua' { 'make_loggers' } (
-    "http.lua", "HTP"
-  )
+local log, dbg, spam, log_error
+      = import 'lua-aplicado/log.lua' { 'make_loggers' } (
+          "http.lua", "HTP"
+        )
 
 --------------------------------------------------------------------------------
 
