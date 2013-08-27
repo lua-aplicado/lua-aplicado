@@ -15,6 +15,7 @@ dependencies = {
    "luafilesystem >= 1.5.0",
    "lbci >= 20090306",
    "luasocket >= 2.0.2",
+   "luasec >= 0.4",
    "luaposix >= 5.1.23",
    "lpeg",
    "md5"
