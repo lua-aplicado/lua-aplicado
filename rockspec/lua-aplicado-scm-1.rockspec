@@ -29,6 +29,7 @@ build = {
          ["lua-aplicado.code.exports"] = "lua-aplicado/code/exports.lua";
          ["lua-aplicado.code.globals"] = "lua-aplicado/code/globals.lua";
          ["lua-aplicado.code.profile"] = "lua-aplicado/code/profile.lua";
+         ["lua-aplicado.common_logging"] = "lua-aplicado/common_logging.lua";
          ["lua-aplicado.csv"] = "lua-aplicado/csv.lua";
          ["lua-aplicado.error"] = "lua-aplicado/error.lua";
          ["lua-aplicado.expat"] = "lua-aplicado/expat.lua";

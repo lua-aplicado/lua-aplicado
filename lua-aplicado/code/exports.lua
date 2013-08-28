@@ -42,6 +42,10 @@ return
   {
     { "lua-aplicado/log.lua", w = 0 };
   };
+  create_common_stdout_logging =
+  {
+    { "lua-aplicado/common_logging.lua", w = 0 };
+  };
   create_email =
   {
     { "lua-aplicado/shell/send_email.lua", w = 0 };
