@@ -14,6 +14,10 @@ return
   {
     { "lua-aplicado/expat.lua", w = 0 };
   };
+  build_config_dsl =
+  {
+    { "lua-aplicado/dsl/config_dsl.lua", w = 0 };
+  };
   call =
   {
     { "lua-aplicado/error.lua", w = 0 };
@@ -66,6 +70,10 @@ return
   {
     { "lua-aplicado/filesystem.lua", w = 0 };
   };
+  create_tree_walker_with_checker_factory =
+  {
+    { "lua-aplicado/dsl/tree_walker_with_checker.lua", w = 0 };
+  };
   csv_convert_to_table =
   {
     { "lua-aplicado/csv.lua", w = 0 };
@@ -90,6 +98,10 @@ return
   {
     { "lua-aplicado/filesystem.lua", w = 0 };
   };
+  freeform_table_value =
+  {
+    { "lua-aplicado/dsl/tools_cli_config.lua", w = 0 };
+  };
   get_common_logging_system =
   {
     { "lua-aplicado/log.lua", w = 0 };
@@ -97,6 +109,10 @@ return
   get_current_logsystem_date_microsecond =
   {
     { "lua-aplicado/log.lua", w = 0 };
+  };
+  get_data_walkers =
+  {
+    { "lua-aplicado/dsl/config_dsl.lua", w = 0 };
   };
   get_extension =
   {
@@ -250,6 +266,14 @@ return
   {
     { "lua-aplicado/filesystem.lua", w = 0 };
   };
+  load_tools_cli_config =
+  {
+    { "lua-aplicado/dsl/tools_cli_config.lua", w = 0 };
+  };
+  load_tools_cli_data_schema =
+  {
+    { "lua-aplicado/dsl/tools_cli_config.lua", w = 0 };
+  };
   luarocks_admin_exec_dir =
   {
     { "lua-aplicado/shell/luarocks.lua", w = 0 };
@@ -337,6 +361,10 @@ return
   normalize_path =
   {
     { "lua-aplicado/filesystem.lua", w = 0 };
+  };
+  print_tools_cli_config_usage =
+  {
+    { "lua-aplicado/dsl/tools_cli_config.lua", w = 0 };
   };
   random_seed_from_string =
   {
@@ -477,6 +505,10 @@ return
   update_file =
   {
     { "lua-aplicado/filesystem.lua", w = 0 };
+  };
+  validate_format =
+  {
+    { "lua-aplicado/dsl/config_dsl.lua", w = 0 };
   };
   write_file =
   {
