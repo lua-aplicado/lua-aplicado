@@ -1,9 +1,7 @@
 --------------------------------------------------------------------------------
 -- test/cases/0050-decorators.lua: tests for decorators
--- This file is a part of lua-aplicado library
--- Copyright (c) Alexander Gladysh <ag@logiceditor.com>
--- Copyright (c) Dmitry Potapov <dp@logiceditor.com>
--- See file `COPYRIGHT` for the license
+-- This file is a part of Lua-Aplicado library
+-- Copyright (c) Lua-Aplicado authors (see file `COPYRIGHT` for the license)
 --------------------------------------------------------------------------------
 
 local make_loggers
