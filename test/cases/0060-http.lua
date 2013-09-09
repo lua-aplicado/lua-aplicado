@@ -66,7 +66,7 @@ require 'wsapi.response'
 
 --------------------------------------------------------------------------------
 
-local log, dbg, spam, log_error = make_loggers("0060-http", "T0060")
+local log, dbg, spam, log_error = make_loggers("0060-http", "T060")
 
 --------------------------------------------------------------------------------
 
