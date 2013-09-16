@@ -178,6 +178,10 @@ return
   {
     { "lua-aplicado/shell/git.lua", w = 0 };
   };
+  git_get_remote_url =
+  {
+    { "lua-aplicado/shell/git.lua", w = 0 };
+  };
   git_get_tracking_branch_name_of_HEAD =
   {
     { "lua-aplicado/shell/git.lua", w = 0 };
