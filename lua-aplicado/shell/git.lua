@@ -105,7 +105,11 @@ local git_is_file_changed_between_revisions = function(
   )
   return #git_read(
       path,
-      "rev-list", "--left-right", lhs_branch .. "..." .. rhs_branch, "--", filename
+      "rev-list",
+      "--left-right",
+      lhs_branch .. "..." .. rhs_branch,
+      "--",
+      filename
     ) ~= 0 -- TODO: Hack
 end
 
