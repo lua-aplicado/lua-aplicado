@@ -143,6 +143,8 @@ local git_is_directory_dirty = function(path, directory)
    ) ~= 0
 end
 
+-- DEPRECATED! Does not support section names with '.'.
+--             Use plumbing commands whenever possible instead!
 -- Note that this function intentionally does not try to do any value coersion.
 -- Every leaf value is a string.
 local git_load_config = function(path)
@@ -175,6 +177,7 @@ local git_load_config = function(path)
   return result
 end
 
+-- DEPRECATED! Does not support '.' in remote names.
 -- Returns false if remote not found
 local git_config_get_remote_url = function(git_config, remote_name)
   arguments(
