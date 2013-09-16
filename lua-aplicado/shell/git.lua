@@ -143,6 +143,16 @@ local git_is_directory_dirty = function(path, directory)
    ) ~= 0
 end
 
+local git_get_remote_url = function(path, remote_name)
+  local url = git_read(
+      path, "ls-remote", "--get-url", remote_name
+    )
+  if not url then
+    return false -- Assuming remote is not found.
+  end
+  return trim(url)
+end
+
 -- DEPRECATED! Does not support section names with '.'.
 --             Use plumbing commands whenever possible instead!
 -- Note that this function intentionally does not try to do any value coersion.
@@ -354,6 +364,7 @@ return
   git_push_all = git_push_all;
   git_is_directory_dirty = git_is_directory_dirty;
   git_load_config = git_load_config;
+  git_get_remote_url = git_get_remote_url;
   git_config_get_remote_url = git_config_get_remote_url;
   git_remote_rm = git_remote_rm;
   git_remote_add = git_remote_add;
