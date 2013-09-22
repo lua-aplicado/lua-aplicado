@@ -14,6 +14,10 @@ return
   {
     { "lua-aplicado/expat.lua", w = 0 };
   };
+  atfork =
+  {
+    { "lua-aplicado/fork.lua", w = 0 };
+  };
   build_config_dsl =
   {
     { "lua-aplicado/dsl/config_dsl.lua", w = 0 };
@@ -97,6 +101,10 @@ return
   find_all_files =
   {
     { "lua-aplicado/filesystem.lua", w = 0 };
+  };
+  fork =
+  {
+    { "lua-aplicado/fork.lua", w = 0 };
   };
   freeform_table_value =
   {

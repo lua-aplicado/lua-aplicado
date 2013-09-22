@@ -37,6 +37,7 @@ build = {
          ["lua-aplicado.error"] = "lua-aplicado/error.lua";
          ["lua-aplicado.expat"] = "lua-aplicado/expat.lua";
          ["lua-aplicado.filesystem"] = "lua-aplicado/filesystem.lua";
+         ["lua-aplicado.fork"] = "lua-aplicado/fork.lua";
          ["lua-aplicado.http"] = "lua-aplicado/http.lua";
          ["lua-aplicado.lj2_chunk_inspector"] = "lua-aplicado/lj2_chunk_inspector.lua";
          ["lua-aplicado.log"] = "lua-aplicado/log.lua";
