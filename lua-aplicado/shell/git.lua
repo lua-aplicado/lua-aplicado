@@ -154,7 +154,13 @@ local git_get_remote_url = function(path, remote_name)
   if not url then
     return false -- Assuming remote is not found.
   end
-  return trim(url)
+
+  url = trim(url)
+  if url == remote_name then
+    return false -- git ls-remote returns remote name if remote is not found
+  end
+
+  return url
 end
 
 -- DEPRECATED! Does not support section names with '.'.
