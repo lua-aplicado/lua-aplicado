@@ -414,6 +414,10 @@ return
   {
     { "lua-aplicado/error.lua", w = 0 };
   };
+  retry_n_times =
+  {
+    { "lua-aplicado/process.lua", w = 0 };
+  };
   rm_tree =
   {
     { "lua-aplicado/filesystem.lua", w = 0 };

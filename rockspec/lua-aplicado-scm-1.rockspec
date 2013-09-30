@@ -43,6 +43,7 @@ build = {
          ["lua-aplicado.log"] = "lua-aplicado/log.lua";
          ["lua-aplicado.luajit2"] = "lua-aplicado/luajit2.lua";
          ["lua-aplicado.module"] = "lua-aplicado/module.lua";
+         ["lua-aplicado.process"] = "lua-aplicado/process.lua";
          ["lua-aplicado.random"] = "lua-aplicado/random.lua";
          ["lua-aplicado.shell"] = "lua-aplicado/shell.lua";
          ["lua-aplicado.shell.filesystem"] = "lua-aplicado/shell/filesystem.lua";
