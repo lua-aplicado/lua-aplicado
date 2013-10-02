@@ -5,6 +5,7 @@
 --------------------------------------------------------------------------------
 
 local socket = require 'socket'
+local socket_sleep = socket.sleep
 
 local arguments,
       optional_arguments,
@@ -35,7 +36,7 @@ local retry_n_times = function(fn, attempts, sleep_time, error_msg)
     if values[1] then
       return unpack(values)
     else
-      socket.sleep(sleep_time)
+      socket_sleep(sleep_time)
     end
   end
   return nil, error_msg
