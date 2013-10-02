@@ -21,25 +21,33 @@ local arguments,
 
 --------------------------------------------------------------------------------
 
-local retry_n_times = function(fn, attempts, sleep_time, error_msg)
-  error_msg = error_msg or "timeout"
-
-  arguments(
-      "function", fn,
-      "number", attempts,
-      "number", sleep_time,
-      "string", error_msg
-    )
-
-  for times = 1, attempts do
-    local n, values = pack(fn())
-    if values[1] then
-      return unpack(values)
-    else
-      socket_sleep(sleep_time)
+local retry_n_times
+do
+  local function impl(fn, attempts, sleep_time, error_msg, ok, ...)
+    if ok then
+      return ok, ...
     end
+    if attempts <= 0 then
+      return nil, error_msg
+    end
+
+    socket_sleep(sleep_time)
+
+    return impl(fn, attempts - 1, sleep_time, error_msg, fn())
   end
-  return nil, error_msg
+
+  retry_n_times = function(fn, attempts, sleep_time, error_msg)
+    error_msg = error_msg or "timeout"
+
+    arguments(
+        "function", fn,
+        "number", attempts,
+        "number", sleep_time,
+        "string", error_msg
+      )
+
+    return impl(fn, attempts - 1, sleep_time, error_msg, fn())
+  end
 end
 
 --------------------------------------------------------------------------------
