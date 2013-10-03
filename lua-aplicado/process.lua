@@ -36,6 +36,13 @@ do
     return impl(fn, attempts - 1, sleep_time, error_msg, fn())
   end
 
+  --- Call function @param fn @param attempts times, with @param sleep_time
+  -- interval.
+  -- @param fn Function to call.
+  -- @param attempts Amount of attempts to run function.
+  -- @param sleep_time Time to wait, before next attempt
+  -- @return Returns result of @param fn on success, otherwise returns nil and
+  --   error mesafw
   retry_n_times = function(fn, attempts, sleep_time, error_msg)
     error_msg = error_msg or "timeout"
 
