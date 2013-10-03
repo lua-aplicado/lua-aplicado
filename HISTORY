@@ -1,3 +1,64 @@
+Version 0.0.5 (2013-10-03)
+==========================
+
+Another fixed-version release.
+
+What's new:
+
+      shell/git:
+        git_get_remote_url
+        git_get_current_branch_name
+        git_get_branch_list
+        git_create_branch
+        git_checkout
+
+      fork:
+        fork()
+        atfork()
+
+      log: logging facilities
+
+      error: finalizers and error handling
+
+      filesystem:
+        create_temporary_directory
+        join_path
+        normalize_path
+        rm_tree
+
+      testing/decorators.lua:
+        temporary_directory
+        temporary_package_path
+
+      http: some utility code to work with HTTP
+
+      dsl: some utilities to work with embedded DSLs
+
+      process:
+        retry_n_times
+
+Changes:
+
+      shell/git:
+        git_load_config and git_config_get_remote_url are deprecated
+
+      make.sh: add --no-restart option
+
+      lua-aplicado/shell:
+        add command output to error message
+        add stderr to stdout redirect to passthrough
+
+      lua-aplicado/shell/luarocks:
+        redirect stderr for luarocks_show_rock_dir
+
+      rockspec:
+        no longer depending on lua-getdate
+        added missing luasec dependency
+
+      filesystem:
+        Change lfs.* to posix.*
+        Throw errors in find_all_files()
+
 Version 0.0.4 (2012-04-16)
 ==========================
 
