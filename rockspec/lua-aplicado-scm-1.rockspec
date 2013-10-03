@@ -10,8 +10,8 @@ description = {
    license = "MIT/X11"
 }
 dependencies = {
-   "lua >= 5.1",
-   "lua-nucleo >= 0.0.1",
+   "lua == 5.1",
+   "lua-nucleo >= 0.1.0",
    "luafilesystem >= 1.5.0",
    "lbci >= 20090306",
    "luasocket >= 2.0.2",
