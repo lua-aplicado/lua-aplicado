@@ -157,6 +157,30 @@ test:case "temporary_package_path_works"
   ensure("good_fake_test was called", called_ok)
 end)
 
+-- Test based on real bug scenario
+-- https://redmine-tmp.iphonestudio.ru/issues/2899
+test:case "temporary_package_path_works_single_call"
+  :with(temporary_directory('test_tmpdir', "lua_aplicado_0050_")) (function(test_env)
+
+  -- create a test file to import in tmpdir
+  local content = 'return { test_fn = function(val) return val + 1 end }'
+
+  write_file(join_path(test_env.test_tmpdir, "test_file_2.lua"), content)
+
+  local upvalue = 1
+  local fake_test = function()
+    local test_fn = import "test_file_2.lua" { 'test_fn' }
+    upvalue = test_fn(upvalue)
+    ensure_equals("upvalue was updated once", upvalue, 2)
+  end
+
+  local decorator = temporary_package_path('test_tmpdir')
+  local wrapped = decorator(fake_test)
+  wrapped(test_env)
+
+  ensure_equals("upvalue was updated once", upvalue, 2)
+end)
+
 test:case "temporary_package_path_cleanup"
     :with(temporary_directory('test_tmpdir', "lua_aplicado_0050_")) (function(test_env)
 
