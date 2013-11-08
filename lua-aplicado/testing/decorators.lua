@@ -89,9 +89,8 @@ local temporary_package_path = function(env_key)
       local tmp_pkgdir = env[env_key]
       local original_path = package.path
       package.path = join_path(tmp_pkgdir, "?.lua") .. ";" .. package.path
-      test_function(env)
       return xfinally(
-          test_function,
+          bind_many(test_function, env),
           function()
             package.path = original_path
           end
