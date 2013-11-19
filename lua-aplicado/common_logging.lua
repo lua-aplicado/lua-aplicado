@@ -4,6 +4,10 @@
 -- Copyright (c) Lua-Aplicado authors (see file `COPYRIGHT` for the license)
 --------------------------------------------------------------------------------
 
+local posix = require 'posix'
+
+--------------------------------------------------------------------------------
+
 local twithdefaults
       = import 'lua-nucleo/table-utils.lua'
       {
@@ -79,7 +83,7 @@ do
     pipe = pipe or io.stdout
 
     create_common_logging_system(
-        logging_system_id,
+        logging_system_id .. "{"..("%05d"):format(posix.getpid("pid")).."} ",
         wrap_file_sink(pipe),
         make_common_logging_config(
             log_level_config,
