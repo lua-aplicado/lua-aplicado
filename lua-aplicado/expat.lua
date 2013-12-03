@@ -1,7 +1,12 @@
 --------------------------------------------------------------------------------
--- expat.lua: basic code to convert lxp.lom object to table with tags as a keys
+-- expat.lua: various utilities to work with lua-expat
 -- This file is a part of Lua-Aplicado library
 -- Copyright (c) Lua-Aplicado authors (see file `COPYRIGHT` for the license)
+--------------------------------------------------------------------------------
+
+local assert, type
+    = assert, type
+
 --------------------------------------------------------------------------------
 
 local unique_object
@@ -26,12 +31,13 @@ local arguments,
         'method_arguments'
       }
 
-------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
 local LOM_ATTRS = unique_object()
+
 local xml_convert_lom
 do
-  --reads a list of attributes from a intger-index part of source table and
+  --reads a list of attributes from a integer-index part of source table and
   -- return the table of the form "attribute name" => "value"
   --example:
   --source table: attr={"id","status","sum",status="150",sum="0.05",id="FF00"}
@@ -91,5 +97,6 @@ end
 return
 {
   LOM_ATTRS = LOM_ATTRS;
+  --
   xml_convert_lom = xml_convert_lom;
 }
