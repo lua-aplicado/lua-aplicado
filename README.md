@@ -22,6 +22,10 @@ Dependencies
 
     sudo luarocks install luasocket
 
+### libssl-dev
+
+    sudo apt-get install libssl-dev
+
 Installation
 ------------
 
