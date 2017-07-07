@@ -106,6 +106,8 @@ local function find_all_files(path, regexp, dest, mode)
 
       if filetype == "directory" then
         find_all_files(filepath, regexp, dest)
+      elseif filetype == "link" then
+        find_all_files(filepath, regexp, dest)
       elseif not mode or filetype == mode then
         if filename:find(regexp) then
           dest[#dest + 1] = filepath
