@@ -131,6 +131,14 @@ local function create_tmp_files(filenames_table, tmp_dir)
   end
 end
 
+-- Helper: Creates symlink in temporary directory.
+local function create_tmp_symlink(target, link, tmp_dir)
+  local targetpath = join_path(tmp_dir, target)
+  local linkpath = join_path(tmp_dir, link)
+  register_temp_file(linkpath)
+  posix.link(targetpath, linkpath, true)
+end
+
 --------------------------------------------------------------------------------
 
 test:group 'do_atomic_op_with_file'
@@ -468,6 +476,85 @@ function()
       end,
       "No such file or directory"
     )
+end)
+
+test:case "find_all_files-with-symlink-to-file-returns-matched-linked-file"
+  :with(temporary_directory("tmpdir", "tmp")) (
+function(env)
+  create_tmp_files(
+      {
+        "files/a.txt";
+        "links/b";
+      },
+      env.tmpdir
+    )
+  create_tmp_symlink(
+    "files/a.txt",
+    "links/link_to_a",
+    env.tmpdir
+  )
+
+  local files = find_all_files(join_path(env.tmpdir, "links"), "txt")
+  ensure_equals("1 file should be found", #files, 1)
+  for i = 1, #files do
+    ensure(
+        "linked file found",
+        ends_with(files[i], "txt")
+      )
+  end
+end)
+
+test:case "find_all_files-with-symlink-to-dir-returns-matched-files-from-linked-dir"
+  :with(temporary_directory("tmpdir", "tmp")) (
+function(env)
+  create_tmp_files(
+      {
+        "files/a.txt";
+        "links/b";
+      },
+      env.tmpdir
+    )
+  create_tmp_symlink(
+    "files",
+    "links/link_to_dir_with_files",
+    env.tmpdir
+  )
+
+  local files = find_all_files(join_path(env.tmpdir, "links"), "txt")
+  ensure_equals("1 file should be found", #files, 1)
+  for i = 1, #files do
+    ensure(
+        "linked file found",
+        ends_with(files[i], "txt")
+      )
+  end
+end)
+
+test:case "find_all_files-with-symlink-to-nonexistent-file-retuns-empty-list"
+  :with(temporary_directory("tmpdir", "tmp")) (
+function(env)
+  create_tmp_files(
+      {
+        "files/a.txt";
+        "links/b";
+      },
+      env.tmpdir
+    )
+  create_tmp_symlink(
+    "files/a.txt",
+    "links/link_to_a",
+    env.tmpdir
+  )
+  os.remove(join_path(env.tmpdir, "files/a.txt")) 
+
+  local files = find_all_files(join_path(env.tmpdir, "links"), "txt")
+  ensure_equals("1 file should be found", #files, 1)
+  for i = 1, #files do
+    ensure(
+        "linked file found",
+        ends_with(files[i], "txt")
+      )
+  end
 end)
 
 --------------------------------------------------------------------------------
