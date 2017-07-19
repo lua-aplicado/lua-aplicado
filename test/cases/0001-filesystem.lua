@@ -131,6 +131,14 @@ local function create_tmp_files(filenames_table, tmp_dir)
   end
 end
 
+-- Helper: Creates symlink in temporary directory.
+local function create_tmp_symlink(target, link, tmp_dir)
+  local targetpath = join_path(tmp_dir, target)
+  local linkpath = join_path(tmp_dir, link)
+  register_temp_file(linkpath)
+  posix.link(targetpath, linkpath, true)
+end
+
 --------------------------------------------------------------------------------
 
 test:group 'do_atomic_op_with_file'
@@ -458,6 +466,140 @@ function(env)
   end
 end)
 
+test:case "find_all_files-with-directory-mode-fails"
+  :with(temporary_directory("tmpdir", "tmp")) (
+function(env)
+  create_tmp_files(
+      {
+        "a.txt";
+        "X.txt/c";
+      },
+      env.tmpdir
+    )
+
+  create_tmp_symlink(
+    "a.txt",
+    "link.txt",
+    env.tmpdir
+  )
+
+  ensure_fails_with_substring(
+      "fails with directory mode",
+      function()
+        find_all_files(env.tmpdir, "%.txt", nil, "directory")
+      end,
+      "assertion failed"
+    )
+end)
+
+test:case "find_all_files-with-regular-mode-returns-only-matching-regular-files"
+  :with(temporary_directory("tmpdir", "tmp")) (
+function(env)
+  create_tmp_files(
+      {
+        "a.txt";
+        "B/F/c.txt";
+        "X.txt/c";
+        "B/d";
+      },
+      env.tmpdir
+    )
+
+  create_tmp_symlink(
+    "B/d",
+    "link.txt",
+    env.tmpdir
+  )
+  create_tmp_symlink(
+    "B/d",
+    "B/link2.txt",
+    env.tmpdir
+  )
+
+  local files = find_all_files(env.tmpdir, "%.txt", {}, "regular")
+
+  ensure_equals("2 files are found", #files, 2)
+  for i = 1, #files do
+    ensure(
+      "link and dirs are missing in result, files are found",
+      ends_with(files[i], "/a.txt")
+      or ends_with(files[i], "B/F/c.txt")
+    )
+  end
+end)
+
+test:case "find_all_files-with-link-mode-returns-only-matching-links" 
+  :with(temporary_directory("tmpdir", "tmp")) (
+function(env)
+  create_tmp_files(
+      {
+        "a.txt";
+        "B/F/c.txt";
+        "X.txt/c";
+        "B/d";
+      },
+      env.tmpdir
+    )
+
+  create_tmp_symlink(
+    "B/d",
+    "link.txt",
+    env.tmpdir
+  )
+  create_tmp_symlink(
+    "B/d",
+    "B/link2.txt",
+    env.tmpdir
+  )
+
+  local files = find_all_files(env.tmpdir, "%.txt", {}, "link")
+  ensure_equals("2 links is found", #files, 2)
+  for i = 1, #files do
+    ensure(
+      "files and dirs are missing in result, links are found",
+      ends_with(files[i], "/link.txt")
+      or ends_with(files[i], "B/link2.txt")
+    )
+  end
+end)
+
+test:case "find_all_files-with-no-mode-returns-matching-links-and-files" 
+  :with(temporary_directory("tmpdir", "tmp")) (
+function(env)
+  create_tmp_files(
+      {
+        "a.txt";
+        "B/F/c.txt";
+        "X.txt/c";
+        "B/d";
+      },
+      env.tmpdir
+    )
+
+  create_tmp_symlink(
+    "B/d",
+    "link.txt",
+    env.tmpdir
+  )
+  create_tmp_symlink(
+    "B/d",
+    "B/link2.txt",
+    env.tmpdir
+  )
+
+  local files = find_all_files(env.tmpdir, "%.txt")
+  ensure_equals("2 links and 2 files are found", #files, 4)
+  for i = 1, #files do
+    ensure(
+      "files and links are found",
+      ends_with(files[i], "/link.txt")
+      or ends_with(files[i], "B/link2.txt")
+      or ends_with(files[i], "/a.txt")
+      or ends_with(files[i], "B/F/c.txt")
+    )
+  end
+end)
+
 test:case "find_all_files-fails-on-unexisting-path" (
 function()
   -- Fail to get files of directory that doesn't exist
@@ -468,6 +610,124 @@ function()
       end,
       "No such file or directory"
     )
+end)
+
+test:case "find_all_files-with-symlink-to-file-returns-matched-linked-file"
+  :with(temporary_directory("tmpdir", "tmp")) (
+function(env)
+  create_tmp_files(
+      {
+        "files/a.txt";
+        "links/b";
+      },
+      env.tmpdir
+    )
+  create_tmp_symlink(
+    "files/a.txt",
+    "links/link_to_a",
+    env.tmpdir
+  )
+
+  local files = find_all_files(join_path(env.tmpdir, "links"), "txt")
+  ensure_equals("1 file should be found", #files, 1)
+  ensure_equals("linked file is found", files[1], join_path(env.tmpdir, "files/a.txt"))
+end)
+
+test:case "find_all_files-with-symlink-to-file-and-file-in-similar-path-returns-matching-file-twice"
+  :with(temporary_directory("tmpdir", "tmp")) (
+function(env)
+  create_tmp_files(
+      {
+        "files/a.txt";
+        "links/b";
+      },
+      env.tmpdir
+    )
+  create_tmp_symlink(
+    "files/a.txt",
+    "links/link_to_a",
+    env.tmpdir
+  )
+
+  local files = find_all_files(env.tmpdir, "txt")
+  ensure_equals("2 files should be found", #files, 2)
+  for i = 1, #files do
+    ensure_equals(
+      "2 files are found",
+      files[i],
+      join_path(env.tmpdir, "files/a.txt")
+    )
+  end
+end)
+
+test:case "find_all_files-with-recurcive-symlink-returns-matching-file"
+  :with(temporary_directory("tmpdir", "tmp")) (
+function(env)
+  create_tmp_files(
+      {
+        "files/a.txt";
+        "links/b";
+      },
+      env.tmpdir
+    )
+  create_tmp_symlink(
+    "files/a.txt",
+    "files/link_to_a",
+    env.tmpdir
+  )
+
+  create_tmp_symlink(
+    "files/link_to_a",
+    "links/link_to_link",
+    env.tmpdir
+  )
+
+  local files = find_all_files(join_path(env.tmpdir, "links"), "txt")
+  ensure_equals("1 files should be found", #files, 1)
+  ensure_equals("file is found", files[1], join_path(env.tmpdir, "files/a.txt"))
+end)
+
+test:case "find_all_files-with-symlink-to-dir-returns-matched-files-from-linked-dir"
+  :with(temporary_directory("tmpdir", "tmp")) (
+function(env)
+  create_tmp_files(
+      {
+        "files/a.txt";
+        "links/b";
+      },
+      env.tmpdir
+    )
+  create_tmp_symlink(
+    "files",
+    "links/link_to_dir_with_files",
+    env.tmpdir
+  )
+
+  local files = find_all_files(join_path(env.tmpdir, "links"), "txt")
+  ensure_equals("1 file should be found", #files, 1)
+  ensure_equals("file from linked dir is found", files[1], join_path(env.tmpdir, "files/a.txt"))
+end)
+
+test:case "find_all_files-with-symlink-to-nonexistent-file-retuns-matching-file"
+  :with(temporary_directory("tmpdir", "tmp")) (
+function(env)
+  create_tmp_files(
+      {
+        "files/a.txt";
+        "links/b";
+      },
+      env.tmpdir
+    )
+  create_tmp_symlink(
+    "files/a.txt",
+    "links/link_to_a",
+    env.tmpdir
+  )
+  os.remove(join_path(env.tmpdir, "files/a.txt")) 
+
+  local files = find_all_files(join_path(env.tmpdir, "links"), "txt")
+  ensure_equals("1 file should be found", #files, 1)
+  ensure_equals("file from linked dir is found", files[1], join_path(env.tmpdir, "files/a.txt"))
 end)
 
 --------------------------------------------------------------------------------
