@@ -63,6 +63,24 @@ local does_file_exist = function(filename)
   return not not posix.stat(filename)
 end
 
+-- From penlight (modified)
+--- given a path, return the directory part and a file part.
+-- if there's no directory part, the first value will be empty
+-- @param path A file path
+local function splitpath(path)
+  local i = #path
+  local ch = path:sub(i, i)
+  while i > 0 and ch ~= "/" do
+    i = i - 1
+    ch = path:sub(i, i)
+  end
+  if i == 0 then
+    return '', path
+  else
+    return path:sub(1, i - 1), path:sub(i + 1)
+  end
+end
+
 --- Find all files recursively in path
 -- @param path Path to directory to be recursively searched
 -- @param regexp If name of a file matches against this regexp, it is included
@@ -103,6 +121,22 @@ local function find_all_files(path, regexp, dest, mode)
       if not filetype then
         error("bad file stat: " .. filepath .. "; " .. tostring(err))
       end
+      if filetype == "link" then
+        local target_filepath, err = posix.readlink(filepath)
+        if not target_filepath then
+          error("bad symlink: " .. filepath .. "; " .. tostring(err))
+        end
+
+        local target_filetype = posix.stat(target_filepath, "type")
+        if target_filetype ~= "directory" and target_filetype ~= "link" then
+          filepath = target_filepath
+          local _, f = splitpath(filepath)
+          filename = f
+        else
+          find_all_files(filepath, regexp, dest)
+        end
+      end
+
 
       if filetype == "directory" then
         find_all_files(filepath, regexp, dest)
@@ -353,24 +387,6 @@ local is_directory = function(path)
   end
 
   return (pathtype == "directory")
-end
-
--- From penlight (modified)
---- given a path, return the directory part and a file part.
--- if there's no directory part, the first value will be empty
--- @param path A file path
-local function splitpath(path)
-  local i = #path
-  local ch = path:sub(i, i)
-  while i > 0 and ch ~= "/" do
-    i = i - 1
-    ch = path:sub(i, i)
-  end
-  if i == 0 then
-    return '', path
-  else
-    return path:sub(1, i - 1), path:sub(i + 1)
-  end
 end
 
 local get_filename_from_path = function(path)
