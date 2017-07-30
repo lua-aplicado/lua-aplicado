@@ -633,6 +633,66 @@ function(env)
   ensure_equals("linked file is found", files[1], join_path(env.tmpdir, "files/a.txt"))
 end)
 
+test:case "find_all_files-fails-with-circle-symlink"
+  :with(temporary_directory("tmpdir", "tmp")) (
+function(env)
+  create_tmp_files(
+      {
+        "links/b";
+      },
+      env.tmpdir
+    )
+  create_tmp_symlink(
+    "links/link_to_a.txt",
+    "links/link_to_a.txt",
+    env.tmpdir
+  )
+
+  ensure_fails_with_substring(
+      "error with circle symlink",
+      function()
+        find_all_files(join_path(env.tmpdir, "links"), "txt")
+      end,
+      "Too many levels of symbolic links"
+    )
+end)
+
+test:case "find_all_files-with-relative-symlink-to-file-returns-matched-linked-files"
+  :with(temporary_directory("tmpdir", "tmp")) (
+function(env)
+  create_tmp_files(
+      {
+        "files/a.txt";
+        "links/b";
+      },
+      env.tmpdir
+    )
+  register_temp_file(join_path(env.tmpdir, "links/link_to_a"))
+  posix.link("../files/a.txt", join_path(env.tmpdir, "links/link_to_a"), true)
+
+  local files = find_all_files(join_path(env.tmpdir, "links"), "txt")
+  ensure_equals("1 file should be found", #files, 1)
+  ensure_equals("linked file is found", files[1], join_path(env.tmpdir, "files/a.txt"))
+end)
+
+test:case "find_all_files-with-relative-symlink-to-dir-returns-matched-linked-files"
+  :with(temporary_directory("tmpdir", "tmp")) (
+function(env)
+  create_tmp_files(
+      {
+        "files/a.txt";
+        "links/b";
+      },
+      env.tmpdir
+    )
+  register_temp_file(join_path(env.tmpdir, "links/link_to_a"))
+  posix.link("../files", join_path(env.tmpdir, "links/link_to_a"), true)
+
+  local files = find_all_files(join_path(env.tmpdir, "links"), "txt")
+  ensure_equals("1 file should be found", #files, 1)
+  ensure_equals("linked file is found", files[1], join_path(env.tmpdir, "files/a.txt"))
+end)
+
 test:case "find_all_files-with-symlink-to-file-and-file-in-similar-path-returns-matching-file-twice"
   :with(temporary_directory("tmpdir", "tmp")) (
 function(env)
@@ -708,7 +768,7 @@ function(env)
   ensure_equals("file from linked dir is found", files[1], join_path(env.tmpdir, "files/a.txt"))
 end)
 
-test:case "find_all_files-with-symlink-to-nonexistent-file-retuns-matching-file"
+test:case "find_all_files-fails-with-symlink-to-nonexistent-file"
   :with(temporary_directory("tmpdir", "tmp")) (
 function(env)
   create_tmp_files(
@@ -725,9 +785,13 @@ function(env)
   )
   os.remove(join_path(env.tmpdir, "files/a.txt")) 
 
-  local files = find_all_files(join_path(env.tmpdir, "links"), "txt")
-  ensure_equals("1 file should be found", #files, 1)
-  ensure_equals("file from linked dir is found", files[1], join_path(env.tmpdir, "files/a.txt"))
+  ensure_fails_with_substring(
+      "error with circle symlink",
+      function()
+        find_all_files(join_path(env.tmpdir, "links"), "txt")
+      end,
+      "No such file or directory"
+    )
 end)
 
 --------------------------------------------------------------------------------

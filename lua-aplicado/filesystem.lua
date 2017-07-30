@@ -130,10 +130,13 @@ local function find_all_files(path, regexp, dest, mode)
         end
 
         while filetype == "link" do
-          filepath, err = posix.readlink(filepath)
-          if not filepath then
+          local fp, err = posix.realpath(filepath)
+          if not fp then
             error("bad symlink: " .. filepath .. "; " .. tostring(err))
+          else
+            filepath =  fp
           end
+
           filetype = posix.stat(filepath, "type")
           local _, f = splitpath(filepath)
           filename = f
