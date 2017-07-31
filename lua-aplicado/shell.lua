@@ -5,7 +5,6 @@
 --------------------------------------------------------------------------------
 
 require 'posix'
-
 local assert, error, tostring
     = assert, error, tostring
 
@@ -14,12 +13,11 @@ local table_concat = table.concat
 local os_execute = os.execute
 
 local posix_fork, posix_exec, posix_pipe, posix_dup2, posix_wait, posix_close,
-      posix_open, posix_read, posix_write, posix_WNOHANG, posix_BUFSIZ,
-      posix_O_RDONLY
-    = posix.fork, posix.exec, posix.pipe, posix.dup2, posix.wait, posix.close,
-      posix.open, posix.read, posix.write, posix.WNOHANG, posix.BUFSIZ,
-      posix.O_RDONLY
-
+      posix_open, posix_read, posix_write
+    = (posix.fork or posix.unistd.fork), (posix.exec or posix.unistd.exec), (posix.pipe or posix.unistd.pipe), (posix.dup2 or posix.unistd.dup2), (posix.wait or posix.sys.wait.wait), (posix.close or posix.unistd.close),
+      (posix.open or posix.fcntl.open), (posix.read or posix.unistd.read), (posix.write or posix.unistd.write)
+local posix_WNOHANG, posix_BUFSIZ, posix_O_RDONLY =
+      (posix.WNOHANG or posix.sys.wait.WNOHANG), (posix.BUFSIZ or posix.stdio.BUFSIZ), (posix.O_RDONLY or posix.fcntl.O_RDONLY)
 --------------------------------------------------------------------------------
 
 local arguments,
@@ -213,7 +211,6 @@ do
     else
       -- in child process:
       pcall(function()
-
       -- force stdin = /dev/null
         local dev_null = posix_open("/dev/null", posix_O_RDONLY)
         posix_dup2(dev_null, STDIN_FILENO)
@@ -226,10 +223,9 @@ do
 
         -- TODO: should explicitly close all descriptors, except 0,1,2
         -- GH#1 -- https://github.com/lua-aplicado/lua-aplicado/issues/1
-        err, msg = posix_exec("/bin/sh", "-c", cmd)
-
+        err, msg = posix_exec("/bin/sh", {"-c", cmd})
         -- we can't raise exceptions here
-        posix.write(
+        posix_write(
             STDERR_FILENO,
             "can't exec:" .. (msg or "unreachable") .. "\n"
           )
@@ -291,10 +287,10 @@ do
         posix_dup2(rpipe, STDIN_FILENO)
         -- TODO: should explicitly close all descriptors, except 0,1,2
         -- GH#1 -- https://github.com/lua-aplicado/lua-aplicado/issues/1
-        err, msg = posix_exec("/bin/sh", "-c", cmd)
+        err, msg = posix_exec("/bin/sh", {"-c", cmd})
 
         -- we can't raise exceptions here
-        posix.write(
+        posix_write(
             STDERR_FILENO,
             "can't exec:" .. (msg or "unreachable") .. "\n"
           )
