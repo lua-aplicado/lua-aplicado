@@ -31,7 +31,10 @@ end
 --------------------------------------------------------------------------------
 
 -- Doing require this late to allow the LJ2 check above.
-local bci = require 'inspector'
+
+-- NB: bci may be a bit insane
+declare 'inspector'
+local bci = pcall(require, 'bci') or require 'inspector'
 
 --------------------------------------------------------------------------------
 
