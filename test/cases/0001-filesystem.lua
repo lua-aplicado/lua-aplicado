@@ -6,9 +6,8 @@
 
 local socket = require 'socket'
 require 'posix'
-local posix_getpid, posix_strftime, posix_gmtime =
-      posix.getpid, posix.strftime, posix.gmtime
-
+local posix_strftime, posix_gmtime, posix_link, posix_time =
+      (posix.strftime or posix.time.strftime), (posix.gmtime or posix.time.gmtime), (posix.link or posix.unistd.link), ((type(posix.time)=="function" and posix.time) or posix.time.time)
 --------------------------------------------------------------------------------
 
 local arguments,
@@ -98,6 +97,12 @@ local find_all_files,
         'load_all_files_with_curly_placeholders',
       }
 
+local get_pid
+      = import 'lua-aplicado/get_pid.lua'
+      {
+        'get_pid',
+      }
+
 --------------------------------------------------------------------------------
 
 local test = (...)("filesystem", exports)
@@ -136,9 +141,8 @@ local function create_tmp_symlink(target, link, tmp_dir)
   local targetpath = join_path(tmp_dir, target)
   local linkpath = join_path(tmp_dir, link)
   register_temp_file(linkpath)
-  posix.link(targetpath, linkpath, true)
+  posix_link(targetpath, linkpath, true)
 end
-
 --------------------------------------------------------------------------------
 
 test:group 'do_atomic_op_with_file'
@@ -286,7 +290,7 @@ test:tests_for "rm_tree"
 
 local TEST_DIR = join_path(
     "/tmp",
-    "lua-aplicado-0001-" .. posix_getpid("pid") .. "-" .. posix_strftime('%F-%T', posix_gmtime())
+    "lua-aplicado-0001-" .. get_pid() .. "-" .. posix_strftime('%F-%T', posix_gmtime(posix_time()))
   )
 
 test:case "rm_tree_without_params" (function()
@@ -668,7 +672,7 @@ function(env)
       env.tmpdir
     )
   register_temp_file(join_path(env.tmpdir, "links/link_to_a"))
-  posix.link("../files/a.txt", join_path(env.tmpdir, "links/link_to_a"), true)
+  posix_link("../files/a.txt", join_path(env.tmpdir, "links/link_to_a"), true)
 
   local files = find_all_files(join_path(env.tmpdir, "links"), "txt")
   ensure_equals("1 file should be found", #files, 1)
@@ -686,7 +690,7 @@ function(env)
       env.tmpdir
     )
   register_temp_file(join_path(env.tmpdir, "links/link_to_a"))
-  posix.link("../files", join_path(env.tmpdir, "links/link_to_a"), true)
+  posix_link("../files", join_path(env.tmpdir, "links/link_to_a"), true)
 
   local files = find_all_files(join_path(env.tmpdir, "links"), "txt")
   ensure_equals("1 file should be found", #files, 1)
