@@ -248,7 +248,7 @@ local git_init_subtree = function(
   git_remote_add(path, remote_name, url, true) -- with fetch
 
   assert(git_exec(
-      path, "merge", "-s", "ours", "--no-commit", remote_name .. "/" .. branch
+      path, "merge", "-s", "ours", "--no-commit", "--allow-unrelated-histories", remote_name .. "/" .. branch
     ) == 0, "Can not merge subtree branch")
 
   assert(git_exec(
