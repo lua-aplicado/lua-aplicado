@@ -249,7 +249,7 @@ local git_init_subtree = function(
 
   assert(git_exec(
       path, "merge", "-s", "ours", "--no-commit", remote_name .. "/" .. branch
-    ) == 0)
+    ) == 0, "Can not merge subtree branch")
 
   assert(git_exec(
       path, "read-tree", "--prefix="..relative_path,   "-u", remote_name .. "/" .. branch
