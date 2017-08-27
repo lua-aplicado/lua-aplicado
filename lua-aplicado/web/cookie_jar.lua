@@ -7,6 +7,8 @@
 local setmetatable = setmetatable
 local table_sort = table.sort
 local os_time = os.time
+local os_difftime = os.difftime
+local os_date = os.date
 
 local posix = require 'posix'
 local strptime = posix.strptime
@@ -43,23 +45,35 @@ do
   --
   -- parse date string into unix time
   --
+
+  local convert_time_t_gmt = function(time_t)
+    local os_local_time = os_time()
+    local os_timezone = os_difftime(os_local_time, os_time(os_date("!*t", os_local_time)))
+
+    return os_time(time_t) + os_timezone
+  end
+
   local parse_date_string_to_unix_time = function(date_string, time_fn)
     arguments(
         'string', date_string,
         'function', time_fn
       )
+
+    local hour_offset = date_string:match('GMT([+-]%d%d)')
+    local sec_offset = tonumber(hour_offset) * 60 * 60 
+
     -- ISO
-    local t = strptime(date_string, '%Y-%m-%d %H:%M:%S GMT%z')
+    local t = strptime(date_string, '%Y-%m-%d %H:%M:%S')
     -- RFC6265
     if not t then
-      t = strptime(date_string, '%b %d %H:%M:%S %Y GMT%z')
+      t = strptime(date_string, '%b %d %H:%M:%S %Y')
     end
     if t then
       -- TODO: https://github.com/lua-aplicado/lua-aplicado/issues/9
       --       https://github.com/luaposix/luaposix/issues/32
       -- workaround os.date and strptime incompatibility
       t.day = t.monthday
-      t = time_fn(t)
+      t = time_fn(t) - sec_offset
     end
     return t
   end
@@ -534,7 +548,7 @@ do
   -- since we deal with precise time expiry, we should be able
   -- to use custom time function
   make_cookie_jar = function(time_fn)
-    time_fn = time_fn or os_time
+    time_fn = time_fn or convert_time_t_gmt
     arguments(
         'function', time_fn
       )
