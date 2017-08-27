@@ -62,7 +62,7 @@ end)
 test 'factory-parameters' (function()
 
   local c = make_cookie_jar()
-  ensure_equals('default time function is os.time', c.time_fn_, os.time)
+  ensure('time_fn is a function', assert_is_function(c.time_fn_))
 
   local t = { } -- N.B. test reference equality
   c = make_cookie_jar(function()
