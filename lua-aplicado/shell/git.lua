@@ -289,9 +289,13 @@ end
 -- https://github.com/lua-aplicado/lua-aplicado/issues/12
 local git_init = function(path, bare)
   assert(git_exec(
-      path, "init", path, bare and "--bare" or nil
+      path, "config", '--global', '--get', 'user.email'
+    ) == 0, 'git GLOBAL USER.EMAIL must be specified')
+  
+  assert(git_exec(
+       path, "init", path, bare and "--bare" or nil
     ) == 0)
-end
+ end
 
 local git_init_bare = function(path)
   git_init(path, true)
