@@ -4,8 +4,10 @@
 -- Copyright (c) Lua-Aplicado authors (see file `COPYRIGHT` for the license)
 --------------------------------------------------------------------------------
 
-local assert
-    = assert
+local assert, 
+      error
+    = assert,
+      error
 
 --------------------------------------------------------------------------------
 
@@ -43,6 +45,8 @@ local shell_exec,
         'shell_read'
       }
 
+local is_email_exist = false
+
 --------------------------------------------------------------------------------
 
 local git_format_command = function(path, command, ...)
@@ -52,6 +56,17 @@ local git_format_command = function(path, command, ...)
 end
 
 local git_exec = function(path, command, ...)
+  if not is_email_exist then
+    if
+      shell_exec(git_format_command(path, "config", '--local', '--get', 'user.email')) == 0 or
+      shell_exec(git_format_command(path, "config", '--global', '--get', 'user.email')) == 0
+    then
+      is_email_exist = true
+    else
+      error('git GLOBAL or LOCAL user.email must be specified')
+    end
+  end
+
   return shell_exec(git_format_command(path, command, ...))
 end
 
