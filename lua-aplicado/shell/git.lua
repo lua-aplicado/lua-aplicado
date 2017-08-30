@@ -45,8 +45,6 @@ local shell_exec,
         'shell_read'
       }
 
-local does_email_exist = false
-
 --------------------------------------------------------------------------------
 
 local git_format_command = function(path, command, ...)
@@ -56,18 +54,14 @@ local git_format_command = function(path, command, ...)
 end
 
 local git_exec = function(path, command, ...)
-  if not does_email_exist then
-    if
-      shell_exec(git_format_command(path, "config", '--local', '--get', 'user.email')) == 0 or
-      shell_exec(git_format_command(path, "config", '--global', '--get', 'user.email')) == 0
-    then
-      does_email_exist = true
-    else
-      error('git GLOBAL or LOCAL user.email must be specified')
-    end
+  if
+    shell_exec(git_format_command(path, 'config', '--global', '--get', 'user.email')) == 0 or
+    shell_exec(git_format_command(path, 'config', '--local', '--get', 'user.email')) == 0
+  then
+    return shell_exec(git_format_command(path, command, ...))
+  else
+    error('git GLOBAL or LOCAL user.email must be specified')
   end
-
-  return shell_exec(git_format_command(path, command, ...))
 end
 
 local git_read = function(path, command, ...)
