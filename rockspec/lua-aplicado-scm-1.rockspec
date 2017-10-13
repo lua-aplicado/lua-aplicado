@@ -52,6 +52,9 @@ build = {
          ["lua-aplicado.shell.remote"] = "lua-aplicado/shell/remote.lua";
          ["lua-aplicado.shell.remote_luarocks"] = "lua-aplicado/shell/remote_luarocks.lua";
          ["lua-aplicado.shell.send_email"] = "lua-aplicado/shell/send_email.lua";
+         ["lua-aplicado.srv.base_conn"] = "lua-aplicado/srv/base_conn.lua";
+         ["lua-aplicado.srv.copas_conn"] = "lua-aplicado/srv/copas_conn.lua";
+         ["lua-aplicado.srv.raw_conn"] = "lua-aplicado/srv/raw_conn.lua";
          ["lua-aplicado.testing.decorators"] = "lua-aplicado/testing/decorators.lua";
          ["lua-aplicado.web.cookie_jar"] = "lua-aplicado/web/cookie_jar.lua";
       }
