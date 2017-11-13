@@ -31,7 +31,7 @@ local make_wsapi_tcp_server_loop
 -- TODO: Change pk-engine/test to pk-test after publishing of pk-test
 -- https://github.com/lua-aplicado/lua-aplicado/issues/23
 local do_with_server
-      = import 'pk-engine/test/server.lua'
+      = import 'pk-test/server.lua'
       {
         'do_with_server'
       }
@@ -45,7 +45,7 @@ local make_loggers
 -- TODO: Change pk-engine/test to pk-test after publishing of pk-test
 -- https://github.com/lua-aplicado/lua-aplicado/issues/23
 local wait_for_server_start
-      = import 'pk-engine/test/client.lua'
+      = import 'pk-test/client.lua'
       {
         'wait_for_server_start'
       }

@@ -30,6 +30,7 @@ build = {
          ["lua-aplicado.code.globals"] = "lua-aplicado/code/globals.lua";
          ["lua-aplicado.code.profile"] = "lua-aplicado/code/profile.lua";
          ["lua-aplicado.common_logging"] = "lua-aplicado/common_logging.lua";
+         ["lua-aplicado.connector"] = "lua-aplicado/connector.lua";
          ["lua-aplicado.csv"] = "lua-aplicado/csv.lua";
          ["lua-aplicado.dsl.config_dsl"] = "lua-aplicado/dsl/config_dsl.lua";
          ["lua-aplicado.dsl.tools_cli_config"] = "lua-aplicado/dsl/tools_cli_config.lua";
