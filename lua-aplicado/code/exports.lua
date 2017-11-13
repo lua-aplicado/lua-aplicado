@@ -34,6 +34,10 @@ return
   {
     { "lua-aplicado/http.lua", w = 0 };
   };
+  connect =
+  {
+    { "lua-aplicado/connector.lua", w = 0 };
+  };
   copy_file =
   {
     { "lua-aplicado/shell/filesystem.lua", w = 0 };
@@ -250,6 +254,10 @@ return
   {
     { "lua-aplicado/shell/git.lua", w = 0 };
   };
+  http_request =
+  {
+    { "lua-aplicado/connector.lua", w = 0 };
+  };
   is_common_logging_system_initialized =
   {
     { "lua-aplicado/log.lua", w = 0 };
@@ -366,9 +374,17 @@ return
   {
     { "lua-aplicado/web/cookie_jar.lua", w = 0 };
   };
+  make_domain_socket_connector =
+  {
+    { "lua-aplicado/connector.lua", w = 0 };
+  };
   make_loggers =
   {
     { "lua-aplicado/log.lua", w = 0 };
+  };
+  make_tcp_connector =
+  {
+    { "lua-aplicado/connector.lua", w = 0 };
   };
   normalize_path =
   {
