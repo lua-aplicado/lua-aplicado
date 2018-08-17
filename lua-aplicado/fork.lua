@@ -5,7 +5,7 @@
 --------------------------------------------------------------------------------
 
 local posix = require 'posix'
-
+local posix_fork = (posix.fork or posix.unistd.fork)
 --------------------------------------------------------------------------------
 
 local optional_arguments
@@ -30,7 +30,7 @@ do
     for i = 1, #prepare_callbacks do
       prepare_callbacks[i]()
     end
-    local cpid = posix.fork()
+    local cpid = posix_fork()
     if cpid > 0 then
       for j = 1, #parent_callbacks do
         parent_callbacks[j]()
