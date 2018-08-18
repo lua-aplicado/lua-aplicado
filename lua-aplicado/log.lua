@@ -182,7 +182,8 @@ end
 
 return
 {
-  get_current_logsystem_date_microsecond = get_current_logsystem_date_microsecond;
+  get_current_logsystem_date_microsecond 
+    = get_current_logsystem_date_microsecond;
   is_common_logging_system_initialized = is_common_logging_system_initialized;
   create_common_logging_system = create_common_logging_system;
   get_common_logging_system = get_common_logging_system;

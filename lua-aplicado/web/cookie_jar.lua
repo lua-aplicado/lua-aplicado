@@ -27,7 +27,7 @@ local arguments,
 
 local make_concatter = import 'lua-nucleo/string.lua' { 'make_concatter' }
 
----------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
 --
 -- Web cookie archive (Jar)
@@ -48,7 +48,10 @@ do
 
   local convert_time_t_gmt = function(time_t)
     local os_local_time = os_time()
-    local os_timezone = os_difftime(os_local_time, os_time(os_date("!*t", os_local_time)))
+    local os_timezone = os_difftime(
+        os_local_time,
+        os_time(os_date("!*t", os_local_time))
+      )
 
     return os_time(time_t) + os_timezone
   end
@@ -64,10 +67,12 @@ do
 
     local t
     -- ISO
-    if date_string:find("%d+-%d+-%d+ %d+:%d+:%d+ GMT[+-]%d+") then
+    -- Regexp for dates, example:
+    -- 1970-01-01 12/12/12 GMT+/-12
+    if date_string:find("%d%d%d%d%-%d%d%-%d%d %d%d:%d%d:%d%d GMT[+-]%d%d") then
       t = strptime(date_string, '%Y-%m-%d %H:%M:%S')
     -- RFC6265
-    elseif date_string:find("%a%a%a %d%d %d+:%d+:%d+ %d+ GMT[+-]%d+") then
+    elseif date_string:find("%a%a%a %d%d %d%d:%d%d:%d%d %d%d GMT[+-]%d%d") then
       t = strptime(date_string, '%b %d %H:%M:%S %Y')
     end
     if t then
