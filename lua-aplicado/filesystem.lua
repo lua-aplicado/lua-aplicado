@@ -547,8 +547,8 @@ local function rm_tree(path_to_dir)
     if entry_name ~= CURRENT_DIR and entry_name ~= PARENT_DIR then
       local entry_full_path = normalize_path(join_path(path_to_dir, entry_name))
       if is_directory(entry_full_path) then
-        checker:ensure("remove tree", rm_tree(entry_full_path)) 
         -- remove directory recursively
+        checker:ensure("remove tree", rm_tree(entry_full_path)) 
       else
         checker:ensure("unlink file", posix_unlink(entry_full_path)) 
         -- remove files
