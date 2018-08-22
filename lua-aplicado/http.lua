@@ -55,7 +55,9 @@ local DEFAULT_CONTENT_TYPE = "application/x-www-form-urlencoded"
 local send_http_request, common_send_http_request, is_http_error_code
 do
   local REDIRECT_CODES = tset { 301, 302, 307 }
-  local ALLOWED_METHODS = tset { "POST", "GET" }
+  -- Add HEAD, OPTIONS
+  -- Redmine: 5919
+  local ALLOWED_METHODS = tset { "POST", "GET", "PUT", 'DELETE' }
   local MAX_REDIRECT_LEVEL = 16
   local REQUEST_FIELDS_LIST = { "url", "method", "request_body", "headers", "ssl_options" }
   local OPTIONAL_REQUEST_FIELDS_LIST = tset { "request_body", "headers", "ssl_options" }
@@ -157,7 +159,7 @@ do
       ["Content-Length"] = #request_body;
     }
 
-    if method == "POST" then
+    if method == "POST" or method == "PUT" then
       if is_table(request.headers) then
         if not request.headers["Content-Type"] then
           request_headers["Content-Type"] = DEFAULT_CONTENT_TYPE
