@@ -11,8 +11,9 @@ local loadfile, loadstring = loadfile, loadstring
 local table_sort = table.sort
 local debug_traceback = debug.traceback
 local posix_unlink, posix_rmdir, posix_files, posix_mkdtemp =
-      posix.unlink, posix.rmdir, posix.files, posix.mkdtemp
-
+      (posix.unlink or posix.unistd.unlink), (posix.rmdir or posix.unistd.rmdir), (posix.files or posix.dirent.files), (posix.mkdtemp or posix.stdlib.mkdtemp)
+local posix_stat, posix_dir, posix_realpath, posix_mkdir  =
+      (posix.stat or posix.sys.stat.stat), (posix.dir or posix.dirent.dir), (posix.realpath or posix.stdlib.realpath), (posix.mkdir or posix.sys.stat.mkdir)
 --------------------------------------------------------------------------------
 
 -- TODO: Use debug.traceback() in do_atomic_op_with_file()?
@@ -55,12 +56,57 @@ local DEFAULT_TMP_DIR = "/tmp"
 local DEFAULT_MKTEMP_MASK = "XXXXXX"
 
 --------------------------------------------------------------------------------
+-- Get type of given file
+-- @param filepath Path to file
+-- @return filetype
+--    One of:
+--      "block device"
+--      "character device"
+--      "directory"
+--      "fifo"
+--      "link"
+--      "regular"
+--      "socket"
+local file_type = function(filepath)
+  arguments(
+      "string", filepath
+  )
+
+  if posix.stat then
+    local ft, err = posix_stat(filepath, "type")
+    if not ft then
+      return false, err
+    end
+    return ft
+
+  else
+    local fstat, err = posix.sys.stat.lstat(filepath)
+    if not fstat then
+      return false, err
+    end
+    local ftypes={
+      S_ISBLK = "block device",
+      S_ISCHR = "character device",
+      S_ISDIR = "directory",
+      S_ISFIFO = "fifo",
+      S_ISLNK = "link",
+      S_ISREG = "regular",
+      S_ISSOCK = "socket",
+    }
+    for fname, ftype in pairs(ftypes) do
+      if posix.sys.stat[fname](fstat.st_mode)==1 then
+        return ftype
+      end
+    end
+      return false, "bad file stat: " .. filepath
+  end
+end
 
 --- Return true if file or directory exists and false otherwise
 -- @param filename Path to file or directory
 -- @return true or false
 local does_file_exist = function(filename)
-  return not not posix.stat(filename)
+  return not not posix_stat(filename)
 end
 
 -- From penlight (modified)
@@ -111,12 +157,12 @@ local function find_all_files(path, regexp, dest, mode)
 
   assert(mode ~= "directory")
 
-  local files = assert(posix.dir(path))
+  local files = assert(posix_dir(path))
   for i = 1, #files do
     local filename = files[i]
     if filename ~= "." and filename ~= ".." then
       local filepath = path .. "/" .. filename
-      local filetype, err = posix.stat(filepath, 'type')
+      local filetype, err = file_type(filepath)
 
       if not filetype then
         error("bad file stat: " .. filepath .. "; " .. tostring(err))
@@ -130,14 +176,14 @@ local function find_all_files(path, regexp, dest, mode)
         end
 
         while filetype == "link" do
-          local fp, err = posix.realpath(filepath)
+          local fp, err = posix_realpath(filepath)
           if not fp then
             error("bad symlink: " .. filepath .. "; " .. tostring(err))
           else
             filepath =  fp
           end
 
-          filetype = posix.stat(filepath, "type")
+          filetype = file_type(filepath)
           local _, f = splitpath(filepath)
           filename = f
 
@@ -257,7 +303,7 @@ local create_path_to_file = function(filename)
   for i = 1, #dirs - 1 do
     path = path and (path .. "/" .. dirs[i]) or (dirs[i])
     if path ~= "" and not does_file_exist(path) then
-      local res, err = posix.mkdir(path)
+      local res, err = posix_mkdir(path)
       if not res then
         return nil, "failed to create directory `" .. path .. "': " .. err
       end
@@ -387,7 +433,7 @@ local load_all_files_with_curly_placeholders = function(
 end
 
 local is_directory = function(path)
-  local pathtype, err = posix.stat(path, 'type')
+  local pathtype, err = file_type(path)
   if not pathtype then
     return nil, err
   end

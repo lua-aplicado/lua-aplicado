@@ -11,8 +11,8 @@ local os_difftime = os.difftime
 local os_date = os.date
 
 local posix = require 'posix'
-local strptime = posix.strptime
-local mktime = posix.mktime
+local strptime = (posix.strptime or posix.time.strptime)
+local mktime = (posix.mktime or posix.time.mktime)
 
 local socket_url = require 'socket.url'
 local url_parse = socket_url.parse
@@ -62,10 +62,12 @@ do
     local hour_offset = date_string:match('GMT([+-]%d%d)') or 0
     local sec_offset = tonumber(hour_offset) * 60 * 60 
 
+    local t
     -- ISO
-    local t = strptime(date_string, '%Y-%m-%d %H:%M:%S')
+    if date_string:match("%d%d%d%d%-%d%d%-%d%d %d%d:%d%d:%d%d GMT[+-]%d%d") then
+      t = strptime(date_string, '%Y-%m-%d %H:%M:%S')
     -- RFC6265
-    if not t then
+    elseif date_string:match("%a%a%a %d%d %d%d:%d%d:%d%d %d%d%d%d GMT[+-]%d%d") then
       t = strptime(date_string, '%b %d %H:%M:%S %Y')
     end
     if t then
