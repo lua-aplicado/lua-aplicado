@@ -5,8 +5,6 @@
 --------------------------------------------------------------------------------
 
 local socket = require 'socket'
-local posix = require 'posix'
-
 --------------------------------------------------------------------------------
 
 local arguments,
@@ -37,6 +35,12 @@ local LOG_LEVEL,
         'wrap_file_sink',
         'make_loggers',
         'format_logsystem_date'
+      }
+
+local get_pid
+      = import 'lua-aplicado/get_pid.lua'
+      {
+        'get_pid',
       }
 
 --------------------------------------------------------------------------------
@@ -159,7 +163,7 @@ do
       end
 
       create_common_logging_system(
-          "{"..("%05d"):format(posix.getpid("pid")).."} ",
+          "{"..("%05d"):format(get_pid()).."} ",
           sink,
           logging_config,
           get_current_logsystem_date_microsecond,
@@ -178,7 +182,8 @@ end
 
 return
 {
-  get_current_logsystem_date_microsecond = get_current_logsystem_date_microsecond;
+  get_current_logsystem_date_microsecond 
+    = get_current_logsystem_date_microsecond;
   is_common_logging_system_initialized = is_common_logging_system_initialized;
   create_common_logging_system = create_common_logging_system;
   get_common_logging_system = get_common_logging_system;

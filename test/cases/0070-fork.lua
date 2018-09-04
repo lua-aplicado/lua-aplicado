@@ -5,7 +5,7 @@
 --------------------------------------------------------------------------------
 
 local posix = require 'posix'
-
+local posix_exit, posix_wait = (posix._exit or posix.unistd._exit), (posix.wait or posix.sys.wait.wait)
 local ensure,
       ensure_equals
       = import 'lua-nucleo/ensure.lua'
@@ -53,14 +53,14 @@ test:case "fork-and-atfork-work" (function()
   atfork(on_prepare, on_parent, on_child)
   local cpid = fork()
   if cpid > 0 then
-    local _, _, status = posix.wait(cpid)
+    local _, _, status = posix_wait(cpid)
     ensure_equals("should call right callbacks in child", status, 11)
     ensure_equals("should call right callbacks in parent", x, "prepare,parent")
   else
     if x ~= "prepare,child" then
-      posix._exit(10)
+      posix_exit(10)
     else
-      posix._exit(11) -- "These go to eleven"
+      posix_exit(11) -- "These go to eleven"
     end
   end
 end)
