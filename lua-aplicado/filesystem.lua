@@ -4,7 +4,7 @@
 -- Copyright (c) Lua-Aplicado authors (see file `COPYRIGHT` for the license)
 --------------------------------------------------------------------------------
 
-require 'posix'
+local posix = require 'posix'
 
 local package = package
 local loadfile, loadstring = loadfile, loadstring

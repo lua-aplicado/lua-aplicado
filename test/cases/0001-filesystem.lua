@@ -5,7 +5,7 @@
 --------------------------------------------------------------------------------
 
 local socket = require 'socket'
-require 'posix'
+local posix = require 'posix'
 local posix_getpid, posix_strftime, posix_gmtime =
       posix.getpid, posix.strftime, posix.gmtime
 
@@ -528,7 +528,7 @@ function(env)
   end
 end)
 
-test:case "find_all_files-with-link-mode-returns-only-matching-links" 
+test:case "find_all_files-with-link-mode-returns-only-matching-links"
   :with(temporary_directory("tmpdir", "tmp")) (
 function(env)
   create_tmp_files(
@@ -563,7 +563,7 @@ function(env)
   end
 end)
 
-test:case "find_all_files-with-no-mode-returns-matching-links-and-files" 
+test:case "find_all_files-with-no-mode-returns-matching-links-and-files"
   :with(temporary_directory("tmpdir", "tmp")) (
 function(env)
   create_tmp_files(
@@ -783,7 +783,7 @@ function(env)
     "links/link_to_a",
     env.tmpdir
   )
-  os.remove(join_path(env.tmpdir, "files/a.txt")) 
+  os.remove(join_path(env.tmpdir, "files/a.txt"))
 
   ensure_fails_with_substring(
       "error with circle symlink",
