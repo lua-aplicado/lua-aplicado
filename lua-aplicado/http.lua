@@ -42,8 +42,8 @@ local tset,
 local socket = require "socket"
 require "socket.http"
 require "socket.url"
-local ssl = require "ssl"
-require "ssl.https"
+require "ssl"
+local ssl_https = require "ssl.https"
 local ltn12 = require "ltn12"
 
 --------------------------------------------------------------------------------
@@ -125,7 +125,7 @@ do
       end
 
       request = toverride_many(request, ssl_options)
-      res, code, response_headers = ssl.https.request(request)
+      res, code, response_headers = ssl_https.request(request)
     else
       return nil, "unsupported scheme: " .. tostring(uri_scheme)
     end
