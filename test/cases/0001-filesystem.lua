@@ -3,6 +3,8 @@
 -- This file is a part of Lua-Aplicado library
 -- Copyright (c) Lua-Aplicado authors (see file `COPYRIGHT` for the license)
 --------------------------------------------------------------------------------
+-- luacheck: globals import
+--------------------------------------------------------------------------------
 
 local socket = require 'socket'
 local posix = require 'posix'
@@ -12,8 +14,8 @@ local posix_getpid, posix_strftime, posix_gmtime =
 --------------------------------------------------------------------------------
 
 local arguments,
-      method_arguments,
-      optional_arguments
+      method_arguments, -- luacheck: ignore
+      optional_arguments -- luacheck: ignore
       = import 'lua-nucleo/args.lua'
       {
         'arguments',
@@ -25,9 +27,6 @@ local ensure,
       ensure_is,
       ensure_equals,
       ensure_strequals,
-      ensure_tequals,
-      ensure_error,
-      ensure_aposteriori_probability,
       ensure_fails_with_substring,
       ensure_error_with_substring
       = import 'lua-nucleo/ensure.lua'
@@ -49,12 +48,6 @@ local starts_with,
       {
         'starts_with',
         'ends_with',
-      }
-
-local assert_is_string
-      = import 'lua-nucleo/typeassert.lua'
-      {
-        'assert_is_string'
       }
 
 local temporary_directory
