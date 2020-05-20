@@ -4,6 +4,7 @@
 -- Copyright (c) Lua-Aplicado authors (see file `COPYRIGHT` for the license)
 --------------------------------------------------------------------------------
 -- luacheck: globals import
+-- luacheck: max line length 80
 --------------------------------------------------------------------------------
 
 local socket = require 'socket'
@@ -164,7 +165,9 @@ test:BROKEN "update-file-from-2-threads" (function()
 
     return function()
       socket.sleep(start_timeout)
-      local res, err = do_atomic_op_with_file(TEST_FILE_DO_ATOMIC, make_callback(op_timeout, data))
+      local res, err = do_atomic_op_with_file(
+        TEST_FILE_DO_ATOMIC, make_callback(op_timeout, data)
+      )
       if not res then
         error("worker `" .. data .. "' failed: " .. err)
       end
@@ -182,9 +185,9 @@ test:BROKEN "update-file-from-2-threads" (function()
 
   local expected = "(worker 1)(worker 2)"
 
-  do_with_servers(
+  do_with_servers( -- luacheck: ignore
       make_file_updater_loops(),
-      function(pid_list)
+      function()
         socket.sleep(3)
         local actual = read_file(TEST_FILE_DO_ATOMIC)
         ensure_strequals("file content after atomic ops", actual, expected)
@@ -279,7 +282,8 @@ test:tests_for "rm_tree"
 
 local TEST_DIR = join_path(
     "/tmp",
-    "lua-aplicado-0001-" .. posix_getpid("pid") .. "-" .. posix_strftime('%F-%T', posix_gmtime())
+       "lua-aplicado-0001-" .. posix_getpid("pid")
+    .. "-" .. posix_strftime('%F-%T', posix_gmtime())
   )
 
 test:case "rm_tree_without_params" (function()
@@ -623,7 +627,9 @@ function(env)
 
   local files = find_all_files(join_path(env.tmpdir, "links"), "txt")
   ensure_equals("1 file should be found", #files, 1)
-  ensure_equals("linked file is found", files[1], join_path(env.tmpdir, "files/a.txt"))
+  ensure_equals(
+    "linked file is found", files[1], join_path(env.tmpdir, "files/a.txt")
+  )
 end)
 
 test:case "find_all_files-fails-with-circle-symlink"
@@ -650,7 +656,8 @@ function(env)
     )
 end)
 
-test:case "find_all_files-with-relative-symlink-to-file-returns-matched-linked-files"
+test:case ("find_all_files-with-relative-symlink"
+  .. "-to-file-returns-matched-linked-files")
   :with(temporary_directory("tmpdir", "tmp")) (
 function(env)
   create_tmp_files(
@@ -665,10 +672,13 @@ function(env)
 
   local files = find_all_files(join_path(env.tmpdir, "links"), "txt")
   ensure_equals("1 file should be found", #files, 1)
-  ensure_equals("linked file is found", files[1], join_path(env.tmpdir, "files/a.txt"))
+  ensure_equals(
+    "linked file is found", files[1], join_path(env.tmpdir, "files/a.txt")
+  )
 end)
 
-test:case "find_all_files-with-relative-symlink-to-dir-returns-matched-linked-files"
+test:case ("find_all_files"
+  .. "-with-relative-symlink-to-dir-returns-matched-linked-files")
   :with(temporary_directory("tmpdir", "tmp")) (
 function(env)
   create_tmp_files(
@@ -683,10 +693,13 @@ function(env)
 
   local files = find_all_files(join_path(env.tmpdir, "links"), "txt")
   ensure_equals("1 file should be found", #files, 1)
-  ensure_equals("linked file is found", files[1], join_path(env.tmpdir, "files/a.txt"))
+  ensure_equals(
+    "linked file is found", files[1], join_path(env.tmpdir, "files/a.txt")
+  )
 end)
 
-test:case "find_all_files-with-symlink-to-file-and-file-in-similar-path-returns-matching-file-twice"
+test:case ("find_all_files-with-symlink-to-file"
+  .. "-and-file-in-similar-path-returns-matching-file-twice")
   :with(temporary_directory("tmpdir", "tmp")) (
 function(env)
   create_tmp_files(
@@ -740,7 +753,8 @@ function(env)
   ensure_equals("file is found", files[1], join_path(env.tmpdir, "files/a.txt"))
 end)
 
-test:case "find_all_files-with-symlink-to-dir-returns-matched-files-from-linked-dir"
+test:case ("find_all_files"
+  .. "-with-symlink-to-dir-returns-matched-files-from-linked-dir")
   :with(temporary_directory("tmpdir", "tmp")) (
 function(env)
   create_tmp_files(
@@ -758,7 +772,11 @@ function(env)
 
   local files = find_all_files(join_path(env.tmpdir, "links"), "txt")
   ensure_equals("1 file should be found", #files, 1)
-  ensure_equals("file from linked dir is found", files[1], join_path(env.tmpdir, "files/a.txt"))
+  ensure_equals(
+    "file from linked dir is found",
+    files[1],
+    join_path(env.tmpdir, "files/a.txt")
+  )
 end)
 
 test:case "find_all_files-fails-with-symlink-to-nonexistent-file"
