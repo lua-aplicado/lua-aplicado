@@ -2,8 +2,12 @@
 
 set -e
 
-echo "----> Creating list-exports"
-etc/list-exports/list-exports list_all
+if luarocks show pk-tools.list-exports; then
+  echo "----> Creating list-exports"
+  etc/list-exports/list-exports list_all
+else
+  echo "----> No list-exports installed, skipping"
+fi
 
 echo "----> Generating rockspecs"
 lua etc/rockspec/generate.lua scm-1 > rockspec/lua-aplicado-scm-1.rockspec
